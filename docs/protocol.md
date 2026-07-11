@@ -31,3 +31,7 @@ Receivers must reject unknown protocol versions unless an adapter explicitly sup
 ## Origin and separation
 
 The compact packet, sequence, and checksum pattern was generalized from AETERNA's internal I2C state exchange. AETERNA's 26-byte galaxy-inference response and fault-injection commands are intentionally not part of the public protocol.
+
+## Sequence handling
+
+Sequence numbers use modulo-256 arithmetic. A receiver may classify a packet as newer when the unsigned distance from the last accepted sequence is `1..127`, duplicate when it is `0`, and stale when it is `128..255`. This permits normal wraparound from `255` to `0` while rejecting delayed duplicates.
