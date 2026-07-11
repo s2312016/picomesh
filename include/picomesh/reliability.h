@@ -61,12 +61,13 @@ enum class AckResolution {
 
 // Deterministic retry queue for commands that require acknowledgement.
 // It contains no heap allocation and keeps at most eight in-flight frames.
+// Deadlines use wrap-safe 32-bit millisecond arithmetic.
 class ReliableQueue {
 public:
     explicit ReliableQueue(RetryPolicy policy = {}) noexcept;
 
-    QueueResult enqueue(const Frame& frame, std::uint64_t now_ms) noexcept;
-    TxDecision next_due(std::uint64_t now_ms) noexcept;
+    QueueResult enqueue(const Frame& frame, std::uint32_t now_ms) noexcept;
+    TxDecision next_due(std::uint32_t now_ms) noexcept;
     AckResolution acknowledge(
         std::uint8_t node_id,
         std::uint8_t sequence,
@@ -78,7 +79,7 @@ public:
 private:
     struct Slot {
         Frame frame{};
-        std::uint64_t deadline_ms{0};
+        std::uint32_t deadline_ms{0};
         std::uint8_t attempts{0};
         bool active{false};
     };
