@@ -10,7 +10,11 @@ permissions:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Configure
@@ -19,3 +23,16 @@ jobs:
         run: cmake --build build --parallel
       - name: Test
         run: ctest --test-dir build --output-on-failure
+
+  warnings-as-errors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        env:
+          CXXFLAGS: -Werror
+        run: cmake -S . -B build-strict -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
+      - name: Build
+        run: cmake --build build-strict --parallel
+      - name: Test
+        run: ctest --test-dir build-strict --output-on-failure
