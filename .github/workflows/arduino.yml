@@ -1,0 +1,23 @@
+name: Arduino
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  uno-r4-minima:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile PicoMesh examples
+        uses: arduino/compile-sketches@v1
+        with:
+          fqbn: arduino:renesas_uno:minima
+          sketch-paths: |
+            - examples/ArduinoHeartbeatNode
+            - examples/ArduinoHeartbeatController
+          enable-warnings-report: true
