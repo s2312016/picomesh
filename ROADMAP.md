@@ -1,6 +1,6 @@
 # PicoMesh roadmap
 
-The roadmap describes direction rather than guaranteed dates. Each milestone must preserve deterministic memory use and keep research-specific AETERNA logic outside the public core.
+The roadmap describes direction rather than guaranteed dates. Each milestone must preserve deterministic memory use and keep research-specific logic outside the public core.
 
 ## v0.1 — usable foundation
 
@@ -45,4 +45,4 @@ The roadmap describes direction rather than guaranteed dates. Each milestone mus
 
 ## Explicit non-goals
 
-PicoMesh will not publish AETERNA's research models, datasets, experimental voting logic, task-migration policy, fault-injection scenarios, or board-production files. Those may consume PicoMesh through public extension points.
+PicoMesh will not publish private research models, datasets, experimental voting logic, task-migration policy, fault-injection scenarios, or board-production files. Applications may consume PicoMesh through public extension points without placing those assets in this repository.
