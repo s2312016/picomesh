@@ -15,11 +15,11 @@ constexpr std::size_t kMaxPendingTransmissions = 8;
 
 /** @brief Receiver result carried by an acknowledgement frame. */
 enum class AckStatus : std::uint8_t {
-    accepted = 0,    ///< Command was accepted.
-    rejected = 1,    ///< Command was rejected by application policy.
-    busy = 2,        ///< Receiver is temporarily unable to process it.
-    unsupported = 3, ///< Command or capability is unsupported.
-    malformed = 4,   ///< Command payload was malformed.
+    accepted = 0,     ///< Command was accepted.
+    rejected = 1,     ///< Command was rejected by application policy.
+    busy = 2,         ///< Receiver is temporarily unable to process it.
+    unsupported = 3,  ///< Command or capability is unsupported.
+    malformed = 4,    ///< Command payload was malformed.
 };
 
 /**
@@ -54,39 +54,39 @@ struct RetryPolicy {
     std::uint8_t max_attempts{3};   ///< Total sends before exhaustion.
 };
 
-/** @brief Result of adding a frame to @ref ReliableQueue. */
+/** @brief Result of adding a frame to ReliableQueue. */
 enum class QueueResult {
-    queued,  ///< Frame was stored.
-    full,    ///< Every fixed-capacity slot is active.
-    invalid, ///< Frame is invalid or duplicates an active node/sequence pair.
+    queued,   ///< Frame was stored.
+    full,     ///< Every fixed-capacity slot is active.
+    invalid,  ///< Frame is invalid or duplicates an active node/sequence pair.
 };
 
-/** @brief Action returned by @ref ReliableQueue::next_due. */
+/** @brief Action returned by `ReliableQueue::next_due`. */
 enum class TxAction {
-    none,      ///< No frame is due.
-    send,      ///< Send the returned frame now.
-    exhausted, ///< Attempts are exhausted and the slot was removed.
+    none,       ///< No frame is due.
+    send,       ///< Send the returned frame now.
+    exhausted,  ///< Attempts are exhausted and the slot was removed.
 };
 
 /** @brief One scheduler decision from the reliable queue. */
 struct TxDecision {
-    TxAction action{TxAction::none}; ///< Required action.
-    Frame frame{};                   ///< Frame associated with the decision.
-    std::uint8_t attempts{0};        ///< Attempts made including this decision.
+    TxAction action{TxAction::none};  ///< Required action.
+    Frame frame{};                    ///< Frame associated with the decision.
+    std::uint8_t attempts{0};         ///< Attempts made including this decision.
 };
 
 /** @brief Result of resolving a pending frame with an acknowledgement. */
 enum class AckResolution {
-    not_found, ///< No active frame matched node and sequence.
-    accepted,  ///< Matching frame was removed with accepted status.
-    rejected,  ///< Matching frame was removed with a non-accepted status.
+    not_found,  ///< No active frame matched node and sequence.
+    accepted,   ///< Matching frame was removed with accepted status.
+    rejected,   ///< Matching frame was removed with a non-accepted status.
 };
 
 /**
  * @brief Deterministic retry queue for ACK-required frames.
  *
  * The queue performs no heap allocation, keeps at most
- * @ref kMaxPendingTransmissions frames, and uses wrap-safe 32-bit millisecond
+ * `kMaxPendingTransmissions` frames, and uses wrap-safe 32-bit millisecond
  * deadline arithmetic. A frame is keyed by its node ID and sequence.
  */
 class ReliableQueue {
