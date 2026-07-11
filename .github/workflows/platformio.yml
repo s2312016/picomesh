@@ -1,0 +1,40 @@
+name: PlatformIO
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  uno-r4-minima:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PlatformIO Core
+        run: |
+          python3 -m pip install --user --upgrade platformio
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Show PlatformIO version
+        run: pio --version
+
+      - name: Compile examples as a local library
+        shell: bash
+        run: |
+          for sketch in \
+            ArduinoHeartbeatNode \
+            ArduinoHeartbeatController \
+            ArduinoMultiNodeController \
+            ArduinoReliableCommandController
+          do
+            echo "Compiling $sketch with PlatformIO"
+            pio ci \
+              --board uno_r4_minima \
+              --lib . \
+              "examples/$sketch/$sketch.ino"
+          done
