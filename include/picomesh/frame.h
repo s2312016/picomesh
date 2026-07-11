@@ -21,18 +21,18 @@ constexpr std::size_t kMaxEncodedFrameSize = kFrameOverhead + kMaxPayloadSize;
 
 /** @brief Message category encoded in a frame. */
 enum class MessageType : std::uint8_t {
-    heartbeat = 0x01,      ///< Periodic node-liveness announcement.
-    state = 0x02,          ///< Application state publication.
-    command = 0x10,        ///< Application command.
+    heartbeat = 0x01,        ///< Periodic node-liveness announcement.
+    state = 0x02,            ///< Application state publication.
+    command = 0x10,          ///< Application command.
     acknowledgement = 0x11,  ///< Response to an ACK-required frame.
-    user = 0x80,           ///< First value reserved for application-defined types.
+    user = 0x80,             ///< First value reserved for application-defined types.
 };
 
 /**
  * @brief Decoded, fixed-capacity PicoMesh frame.
  *
- * Only the first @ref payload_length bytes of @ref payload are part of the
- * message. Encoding clamps an oversized payload length to @ref kMaxPayloadSize.
+ * Only the first `payload_length` bytes of `payload` are part of the message.
+ * Encoding clamps an oversized payload length to `kMaxPayloadSize`.
  */
 struct Frame {
     MessageType type{MessageType::heartbeat};  ///< Message category.
@@ -53,9 +53,9 @@ struct EncodedFrame {
 enum class DecodeError {
     none,                 ///< No error.
     too_short,            ///< Buffer cannot contain the minimum frame.
-    bad_magic,            ///< Start byte does not match @ref kFrameMagic.
+    bad_magic,            ///< Start byte does not match `kFrameMagic`.
     unsupported_version,  ///< Wire version is not supported.
-    payload_too_large,    ///< Header declares more than @ref kMaxPayloadSize bytes.
+    payload_too_large,    ///< Header declares more than `kMaxPayloadSize` bytes.
     length_mismatch,      ///< Buffer length does not match the header.
     bad_checksum,         ///< Integrity check failed.
 };
@@ -63,7 +63,7 @@ enum class DecodeError {
 /** @brief Result of strict frame decoding. */
 struct DecodeResult {
     Frame frame{};                          ///< Decoded frame when successful.
-    DecodeError error{DecodeError::none};  ///< Error code or @ref DecodeError::none.
+    DecodeError error{DecodeError::none};  ///< Error code or `DecodeError::none`.
 
     /** @return `true` when decoding succeeded. */
     explicit operator bool() const noexcept { return error == DecodeError::none; }
@@ -99,7 +99,7 @@ EncodedFrame encode_frame(const Frame& frame) noexcept;
 DecodeResult decode_frame(const std::uint8_t* data, std::size_t length) noexcept;
 
 /**
- * @brief Strictly decode an @ref EncodedFrame.
+ * @brief Strictly decode an EncodedFrame.
  * @param data Encoded frame object.
  * @return Decoded frame or a specific error.
  */
