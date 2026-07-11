@@ -1,7 +1,7 @@
+#include <array>
 #include <cassert>
 #include <cstdint>
 #include <iostream>
-#include <vector>
 
 #include "picomesh/checksum.h"
 #include "picomesh/frame.h"
@@ -10,9 +10,8 @@
 namespace {
 
 void test_checksum() {
-    const std::uint8_t data[] = {1, 2, 3, 4};
-    std::vector<std::uint8_t> packet(std::begin(data), std::end(data));
-    packet.push_back(picomesh::checksum8(packet.data(), packet.size()));
+    std::array<std::uint8_t, 5> packet{1, 2, 3, 4, 0};
+    packet.back() = picomesh::checksum8(packet.data(), packet.size() - 1);
     assert(picomesh::verify_checksum8(packet.data(), packet.size()));
 }
 
@@ -29,17 +28,16 @@ void test_frame_round_trip() {
     const auto encoded = picomesh::encode_frame(frame);
     const auto decoded = picomesh::decode_frame(encoded);
     assert(decoded);
-    assert(decoded.frame->node_id == 7);
-    assert(decoded.frame->sequence == 42);
-    assert(decoded.frame->payload_length == 3);
-    assert(decoded.frame->payload[2] == 0x30);
+    assert(decoded.frame.node_id == 7);
+    assert(decoded.frame.sequence == 42);
+    assert(decoded.frame.payload_length == 3);
+    assert(decoded.frame.payload[2] == 0x30);
 }
 
 void test_bad_checksum() {
     picomesh::Frame frame;
-    const auto original = picomesh::encode_frame(frame);
-    auto damaged = original;
-    damaged[2] ^= 0x01;
+    auto damaged = picomesh::encode_frame(frame);
+    damaged.bytes[2] ^= 0x01;
     const auto decoded = picomesh::decode_frame(damaged);
     assert(!decoded);
     assert(decoded.error == picomesh::DecodeError::bad_checksum);
