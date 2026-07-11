@@ -1,0 +1,36 @@
+name: Release readiness
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata-and-archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check whitespace
+        run: git diff --check HEAD^
+
+      - name: Check version metadata
+        run: python3 scripts/check_release_metadata.py
+
+      - name: Create source archive
+        run: git archive --format=zip --prefix=PicoMesh/ --output=PicoMesh-source.zip HEAD
+
+      - name: Check source archive
+        run: python3 scripts/check_source_archive.py PicoMesh-source.zip
+
+      - name: Upload source archive candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: picomesh-source-candidate
+          path: PicoMesh-source.zip
+          if-no-files-found: error
+          retention-days: 14
