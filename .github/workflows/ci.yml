@@ -26,7 +26,7 @@ jobs:
       - name: Install
         run: cmake --install build --config Release --prefix "${{ github.workspace }}/install"
       - name: Configure installed-package consumer
-        run: cmake -S tests/cmake_consumer -B consumer-build -DCMAKE_PREFIX_PATH="${{ github.workspace }}/install"
+        run: cmake -S tests/cmake_consumer -B consumer-build -DPicoMesh_DIR="${{ github.workspace }}/install/lib/cmake/PicoMesh"
       - name: Build installed-package consumer
         run: cmake --build consumer-build --config Release --parallel
 
