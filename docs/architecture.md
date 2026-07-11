@@ -7,7 +7,7 @@ PicoMesh uses four layers:
 3. **Transport adapter** — I2C, UART, CAN, USB CDC, radio, or an in-memory simulator.
 4. **Platform layer** — Arduino, Pico SDK, FreeRTOS, bare metal, or desktop operating systems.
 
-The core must not include AETERNA-specific inference models, datasets, weighted voting, hardware revision names, or fixed nine-node assumptions.
+The core must not include private inference models, datasets, weighted voting, hardware revision names, or fixed topology assumptions.
 
 ## Design principles
 
