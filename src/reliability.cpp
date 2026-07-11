@@ -1,6 +1,15 @@
 #include "picomesh/reliability.h"
 
 namespace picomesh {
+namespace {
+
+bool deadline_reached(
+    const std::uint32_t now_ms,
+    const std::uint32_t deadline_ms) noexcept {
+    return static_cast<std::int32_t>(now_ms - deadline_ms) >= 0;
+}
+
+}  // namespace
 
 Frame make_ack_frame(
     const std::uint8_t node_id,
@@ -41,7 +50,7 @@ ReliableQueue::ReliableQueue(RetryPolicy policy) noexcept : policy_(policy) {
     }
 }
 
-QueueResult ReliableQueue::enqueue(const Frame& input, const std::uint64_t now_ms) noexcept {
+QueueResult ReliableQueue::enqueue(const Frame& input, const std::uint32_t now_ms) noexcept {
     if (input.payload_length > kMaxPayloadSize) {
         return QueueResult::invalid;
     }
@@ -67,9 +76,9 @@ QueueResult ReliableQueue::enqueue(const Frame& input, const std::uint64_t now_m
     return QueueResult::full;
 }
 
-TxDecision ReliableQueue::next_due(const std::uint64_t now_ms) noexcept {
+TxDecision ReliableQueue::next_due(const std::uint32_t now_ms) noexcept {
     for (auto& slot : slots_) {
-        if (!slot.active || now_ms < slot.deadline_ms) {
+        if (!slot.active || !deadline_reached(now_ms, slot.deadline_ms)) {
             continue;
         }
 
@@ -80,7 +89,7 @@ TxDecision ReliableQueue::next_due(const std::uint64_t now_ms) noexcept {
         }
 
         ++slot.attempts;
-        slot.deadline_ms = now_ms + policy_.timeout_ms;
+        slot.deadline_ms = static_cast<std::uint32_t>(now_ms + policy_.timeout_ms);
         return {TxAction::send, slot.frame, slot.attempts};
     }
 
