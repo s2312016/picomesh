@@ -19,23 +19,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes cppcheck
 
-      - name: Run blocking cppcheck diagnostics
+      - name: Run cppcheck
         run: >-
           cppcheck
-          --enable=warning,performance,portability
-          --error-exitcode=1
-          --inline-suppr
-          --suppress=missingIncludeSystem
-          --suppress=unusedFunction
-          --std=c++17
-          -I include
-          src include
-
-      - name: Report cppcheck style findings
-        continue-on-error: true
-        run: >-
-          cppcheck
-          --enable=style
+          --enable=warning,style,performance,portability
           --error-exitcode=1
           --inline-suppr
           --suppress=missingIncludeSystem
@@ -50,8 +37,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Check clang-format
-        id: format
-        continue-on-error: true
         shell: bash
         run: |
           mapfile -t files < <(git ls-files '*.cpp' '*.h' '*.hpp' '*.ino')
@@ -60,9 +45,3 @@ jobs:
             exit 0
           fi
           clang-format --dry-run --Werror "${files[@]}"
-
-      - name: Explain rollout status
-        if: steps.format.outcome == 'failure'
-        run: |
-          echo "Formatting is report-only during the initial rollout."
-          echo "A follow-up change will normalize existing sources before enforcement."
