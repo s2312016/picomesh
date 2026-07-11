@@ -1,12 +1,12 @@
 # Arduino port
 
-The Arduino port will adapt `picomesh::Transport` to `Wire`, `Serial`, and compatible CAN libraries.
+The Arduino port adapts `picomesh::Transport` to `Wire`, `Serial`, and compatible CAN libraries.
 
-Planned first example:
+Current examples:
 
-- Arduino controller polls two or more nodes
+- Arduino controller polls a node
 - Each node emits a heartbeat frame
 - Controller validates the checksum and updates `NodeRegistry`
 - Missing nodes transition offline after a configurable timeout
 
-No AETERNA-specific inference or weighted-voting behavior will be included here.
+Private inference, research evaluation, and weighted-voting behavior are intentionally excluded.
