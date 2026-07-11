@@ -24,7 +24,7 @@ jobs:
       - name: Test
         run: ctest --test-dir build -C Release --output-on-failure
       - name: Install
-        run: cmake --install build --config Release --prefix install
+        run: cmake --install build --config Release --prefix "${{ github.workspace }}/install"
       - name: Configure installed-package consumer
         run: cmake -S tests/cmake_consumer -B consumer-build -DCMAKE_PREFIX_PATH="${{ github.workspace }}/install"
       - name: Build installed-package consumer
