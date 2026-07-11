@@ -1,0 +1,9 @@
+# Default ownership
+* @s2312016
+
+# Compatibility-sensitive areas
+/include/picomesh/ @s2312016
+/src/ @s2312016
+/docs/protocol.md @s2312016
+/ports/ @s2312016
+/.github/workflows/ @s2312016

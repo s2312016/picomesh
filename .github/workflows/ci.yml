@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
+      - name: Build
+        run: cmake --build build --config Release --parallel
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Install
+        run: cmake --install build --config Release --prefix "${{ github.workspace }}/install"
+      - name: Configure installed-package consumer
+        run: cmake -S tests/cmake_consumer -B consumer-build -DCMAKE_BUILD_TYPE=Release -DPicoMesh_DIR="${{ github.workspace }}/install/lib/cmake/PicoMesh"
+      - name: Build installed-package consumer
+        run: cmake --build consumer-build --config Release --parallel
+
+  warnings-as-errors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        env:
+          CXXFLAGS: -Werror
+        run: cmake -S . -B build-strict -DCMAKE_BUILD_TYPE=Release -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
+      - name: Build
+        run: cmake --build build-strict --config Release --parallel
+      - name: Test
+        run: ctest --test-dir build-strict -C Release --output-on-failure
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        env:
+          CXXFLAGS: -fsanitize=address,undefined -fno-omit-frame-pointer
+          LDFLAGS: -fsanitize=address,undefined
+        run: cmake -S . -B build-sanitized -DCMAKE_BUILD_TYPE=Debug -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
+      - name: Build
+        run: cmake --build build-sanitized --parallel
+      - name: Test
+        env:
+          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+        run: ctest --test-dir build-sanitized --output-on-failure

@@ -1,0 +1,40 @@
+name: Pico SDK
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        board: [pico, pico2]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gcc-arm-none-eabi libnewlib-arm-none-eabi
+
+      - name: Fetch Pico SDK 2.3.0
+        run: |
+          git clone --depth 1 --branch 2.3.0 https://github.com/raspberrypi/pico-sdk.git "$RUNNER_TEMP/pico-sdk"
+          git -C "$RUNNER_TEMP/pico-sdk" submodule update --init --depth 1
+
+      - name: Configure
+        env:
+          PICO_SDK_PATH: ${{ runner.temp }}/pico-sdk
+        run: cmake -S examples/PicoSdkI2cNode -B build-pico -DPICO_BOARD=${{ matrix.board }}
+
+      - name: Build
+        run: cmake --build build-pico --parallel
+
+      - name: List firmware outputs
+        run: find build-pico -maxdepth 2 -type f \( -name '*.uf2' -o -name '*.elf' \) -print

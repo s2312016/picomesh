@@ -1,0 +1,14 @@
+/build*/
+/cmake-build-*/
+/.cache/
+/.idea/
+/.vscode/
+*.user
+*.suo
+*.swp
+*.uf2
+*.elf
+*.map
+*.bin
+*.hex
+.DS_Store
