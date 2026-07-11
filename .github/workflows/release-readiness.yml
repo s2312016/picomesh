@@ -1,0 +1,52 @@
+name: Release readiness
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  metadata-and-archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check whitespace
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base="$BASE_SHA"
+          elif [[ -n "$BEFORE_SHA" && ! "$BEFORE_SHA" =~ ^0+$ ]]; then
+            base="$BEFORE_SHA"
+          else
+            base="$(git rev-list --max-parents=0 HEAD)"
+          fi
+          echo "Checking whitespace between $base and HEAD"
+          git diff --check "$base" HEAD
+
+      - name: Check version metadata
+        run: python3 scripts/check_release_metadata.py
+
+      - name: Create source archive
+        run: git archive --format=zip --prefix=PicoMesh/ --output=PicoMesh-source.zip HEAD
+
+      - name: Check source archive
+        run: python3 scripts/check_source_archive.py PicoMesh-source.zip
+
+      - name: Upload source archive candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: picomesh-source-candidate
+          path: PicoMesh-source.zip
+          if-no-files-found: error
+          retention-days: 14
