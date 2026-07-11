@@ -3,8 +3,6 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <optional>
-#include <vector>
 
 namespace picomesh {
 
@@ -32,6 +30,11 @@ struct Frame {
     std::uint8_t payload_length{0};
 };
 
+struct EncodedFrame {
+    std::array<std::uint8_t, kMaxEncodedFrameSize> bytes{};
+    std::size_t length{0};
+};
+
 enum class DecodeError {
     none,
     too_short,
@@ -43,14 +46,14 @@ enum class DecodeError {
 };
 
 struct DecodeResult {
-    std::optional<Frame> frame;
+    Frame frame{};
     DecodeError error{DecodeError::none};
 
-    explicit operator bool() const noexcept { return frame.has_value(); }
+    explicit operator bool() const noexcept { return error == DecodeError::none; }
 };
 
-std::vector<std::uint8_t> encode_frame(const Frame& frame);
+EncodedFrame encode_frame(const Frame& frame) noexcept;
 DecodeResult decode_frame(const std::uint8_t* data, std::size_t length) noexcept;
-DecodeResult decode_frame(const std::vector<std::uint8_t>& data) noexcept;
+DecodeResult decode_frame(const EncodedFrame& data) noexcept;
 
 }  // namespace picomesh
