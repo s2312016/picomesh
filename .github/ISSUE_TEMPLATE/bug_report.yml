@@ -1,28 +1,82 @@
 name: Bug report
-description: Report reproducible incorrect behavior
+description: Report reproducible incorrect behavior in PicoMesh
 title: "[Bug]: "
 labels: [bug]
 body:
-  - type: textarea
-    id: description
+  - type: markdown
     attributes:
-      label: Description
-      description: What happened, and what did you expect?
+      value: |
+        Thank you for reporting a problem. Remove credentials, private data, and unrelated serial identifiers from logs before submitting.
+
+  - type: input
+    id: version
+    attributes:
+      label: PicoMesh version or commit
+      description: Tag, release version, or full commit SHA.
+      placeholder: v0.1.0 or 0123456789abcdef...
     validations:
       required: true
-  - type: input
-    id: platform
+
+  - type: dropdown
+    id: environment
     attributes:
-      label: Platform
-      placeholder: Raspberry Pi Pico 2, Arduino UNO R4, host Linux, etc.
+      label: Environment
+      options:
+        - Host CMake build
+        - Arduino UNO R4 Minima
+        - Raspberry Pi Pico
+        - Raspberry Pi Pico 2
+        - Other Arduino board
+        - Other embedded platform
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: State the observable result you expected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: State what happened, including exact errors or decoded statuses.
+    validations:
+      required: true
+
   - type: textarea
     id: reproduction
     attributes:
-      label: Reproduction steps
+      label: Minimal reproduction
+      description: Include the smallest build commands, code, frame bytes, or steps that reproduce the issue.
+      render: shell
     validations:
       required: true
+
   - type: textarea
     id: logs
     attributes:
-      label: Logs or traces
-      render: shell
+      label: Relevant logs
+      description: Paste concise sanitized logs. Do not include secrets or private device data.
+      render: text
+
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware and wiring
+      description: For physical tests, list exact boards, voltages, pull-ups or level shifting, pins, bus speed, and cable length.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues for the same behavior.
+          required: true
+        - label: I removed credentials, private data, and unrelated identifiers.
+          required: true
+        - label: I distinguish compile-only evidence from physical validation.
+          required: true
