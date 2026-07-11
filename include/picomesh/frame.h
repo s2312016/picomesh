@@ -52,6 +52,14 @@ struct DecodeResult {
     explicit operator bool() const noexcept { return error == DecodeError::none; }
 };
 
+// Returns the complete encoded frame length described by a valid header prefix.
+// This is useful for transports that return a fixed-size read padded with bytes
+// after the frame. A return value of zero means the prefix is incomplete or
+// invalid.
+std::size_t frame_length_from_prefix(
+    const std::uint8_t* data,
+    std::size_t available_length) noexcept;
+
 EncodedFrame encode_frame(const Frame& frame) noexcept;
 DecodeResult decode_frame(const std::uint8_t* data, std::size_t length) noexcept;
 DecodeResult decode_frame(const EncodedFrame& data) noexcept;
