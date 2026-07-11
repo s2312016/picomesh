@@ -23,6 +23,12 @@ jobs:
         run: cmake --build build --parallel
       - name: Test
         run: ctest --test-dir build --output-on-failure
+      - name: Install
+        run: cmake --install build --prefix install
+      - name: Configure installed-package consumer
+        run: cmake -S tests/cmake_consumer -B consumer-build -DCMAKE_PREFIX_PATH="${{ github.workspace }}/install"
+      - name: Build installed-package consumer
+        run: cmake --build consumer-build --parallel
 
   warnings-as-errors:
     runs-on: ubuntu-latest
