@@ -13,6 +13,8 @@ target_link_libraries(picomesh_pico_transport
     PUBLIC
         PicoMesh::picomesh
         hardware_i2c
+        hardware_irq
+        hardware_sync
         hardware_uart
 )
 
