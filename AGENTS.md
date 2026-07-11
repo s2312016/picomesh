@@ -17,9 +17,20 @@ PicoMesh is a reusable embedded distributed-systems framework built as an indepe
 - Keep platform code in `ports`.
 - Maintain C++17 compatibility.
 - Avoid exceptions and heap dependence in parsing and liveness-critical paths.
-- Add tests for every protocol change.
-- Update `docs/protocol.md` when the wire format changes.
+- Preserve bounded storage and deterministic failure behavior.
+- Add tests for every protocol, parser, retry, sequence, or liveness change.
+- Update `docs/protocol.md` when the wire format or protocol semantics change.
 - Treat protocol version changes as compatibility-sensitive.
+- Format modified C and C++ files with the repository `.clang-format` policy.
+- Add API documentation for new public types, constants, and functions.
+
+## Change discipline
+
+- Keep behavior changes separate from mechanical refactors.
+- Do not silently change frame sizes, timeout semantics, retry counts, or node identity rules.
+- Include a compatibility note in pull requests that modify public APIs or transport behavior.
+- Use synthetic examples and test fixtures; do not import private traces or application-specific identifiers.
+- Never claim physical validation unless the exact hardware, toolchain, wiring, and evidence are recorded.
 
 ## Validation
 
@@ -27,4 +38,7 @@ PicoMesh is a reusable embedded distributed-systems framework built as an indepe
 cmake -S . -B build
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure
+doxygen Doxyfile
 ```
+
+Hardware-dependent changes must also update the relevant validation report under `docs/validation/`.
