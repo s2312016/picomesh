@@ -19,9 +19,35 @@ jobs:
         run: sudo apt-get update && sudo apt-get install --yes doxygen graphviz
 
       - name: Build API documentation
+        id: doxygen
+        continue-on-error: true
         run: doxygen Doxyfile
 
+      - name: Upload Doxygen warnings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: picomesh-doxygen-warnings
+          path: doxygen-warnings.log
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Enforce warning-free documentation
+        if: always()
+        shell: bash
+        env:
+          DOXYGEN_OUTCOME: ${{ steps.doxygen.outcome }}
+        run: |
+          if [[ -s doxygen-warnings.log ]]; then
+            cat doxygen-warnings.log
+          fi
+          if [[ "$DOXYGEN_OUTCOME" != "success" ]]; then
+            echo "Doxygen failed or emitted a blocking warning"
+            exit 1
+          fi
+
       - name: Upload HTML documentation
+        if: steps.doxygen.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: picomesh-api-docs
