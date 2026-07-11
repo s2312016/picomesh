@@ -3,6 +3,8 @@
 [![CI](https://github.com/s2312016/picomesh/actions/workflows/ci.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/ci.yml)
 [![Arduino](https://github.com/s2312016/picomesh/actions/workflows/arduino.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/arduino.yml)
 [![Pico SDK](https://github.com/s2312016/picomesh/actions/workflows/pico-sdk.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/pico-sdk.yml)
+[![Static analysis](https://github.com/s2312016/picomesh/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/static-analysis.yml)
+[![Documentation](https://github.com/s2312016/picomesh/actions/workflows/docs.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/docs.yml)
 [![CodeQL](https://github.com/s2312016/picomesh/actions/workflows/codeql.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/codeql.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
@@ -28,10 +30,10 @@ Embedded projects repeatedly reimplement packet framing, checksums, heartbeat tr
 - Transport abstraction for I2C, UART, CAN, USB CDC, radio, or host simulation
 - Arduino Wire controller and peripheral adapters
 - Raspberry Pi Pico/Pico 2 SDK I2C controller, I2C peripheral, and UART adapters
-- Host simulator, lossy-link simulator, unit tests, sanitizers, and CodeQL
+- Host simulator, lossy-link simulator, unit tests, sanitizers, static analysis, and CodeQL
 - CMake install package plus Arduino and PlatformIO metadata
 
-Resource limits are listed in [docs/resource_limits.md](docs/resource_limits.md).
+Resource limits are listed in [docs/resource_limits.md](docs/resource_limits.md). New users should start with the [getting started guide](docs/getting_started.md) and [example catalog](docs/examples.md).
 
 ## Host quick start
 
@@ -39,6 +41,8 @@ Resource limits are listed in [docs/resource_limits.md](docs/resource_limits.md)
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure
+./build/picomesh_frame_codec_example
+./build/picomesh_reliable_queue_example
 ./build/picomesh_host_simulator
 ```
 
@@ -99,12 +103,16 @@ I2C / UART / CAN / USB / simulator
 
 Key documents:
 
+- [Getting started](docs/getting_started.md)
+- [Example catalog](docs/examples.md)
+- [Frequently asked questions](docs/faq.md)
 - [Architecture](docs/architecture.md)
 - [Wire protocol](docs/protocol.md)
 - [Compatibility policy](docs/compatibility.md)
 - [Resource limits](docs/resource_limits.md)
 - [Use cases](docs/use_cases.md)
 - [Hardware validation](docs/hardware_validation.md)
+- [Static analysis policy](docs/static_analysis.md)
 - [Public project boundary](docs/project_boundary.md)
 
 ## Roadmap
