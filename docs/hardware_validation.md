@@ -53,6 +53,19 @@ Record:
 7. Run at least 1,000 heartbeat reads while repeatedly publishing updated frames.
 8. Repeat the reference tests on Pico and Pico 2 when both are available.
 
+## Summarize captured output
+
+Save sanitized serial output as UTF-8 text and run:
+
+```sh
+python3 scripts/summarize_serial_log.py heartbeat-session.txt
+python3 scripts/summarize_serial_log.py --json heartbeat-session.txt > heartbeat-summary.json
+```
+
+The tool recognizes heartbeat frames, online-count transitions, invalid reads, queued commands, send attempts, acknowledgements, and retry exhaustion. It also classifies duplicate, forward, wraparound, and stale-or-backward sequence observations per node.
+
+Review the source log and summary together. The summarizer intentionally does not declare a test pass or certify physical validation; wiring, voltages, timestamps, toolchain versions, omitted scenarios, and intermittent failures still require human review.
+
 ## Report format
 
 Create a report under `docs/validation/` named after the release candidate, for example:
@@ -68,6 +81,7 @@ Include:
 - Wiring table
 - Pass/fail table
 - Relevant serial excerpts
+- Summary output or JSON from `scripts/summarize_serial_log.py`
 - Known limitations
 - Links to any follow-up issues
 
