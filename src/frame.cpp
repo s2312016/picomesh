@@ -6,6 +6,25 @@
 
 namespace picomesh {
 
+std::size_t frame_length_from_prefix(
+    const std::uint8_t* data,
+    const std::size_t available_length) noexcept {
+    if (data == nullptr || available_length < kFrameHeaderSize) {
+        return 0;
+    }
+    if (data[0] != kFrameMagic || data[1] != kProtocolVersion) {
+        return 0;
+    }
+
+    const auto payload_length = static_cast<std::size_t>(data[6]);
+    if (payload_length > kMaxPayloadSize) {
+        return 0;
+    }
+
+    const std::size_t expected_length = kFrameOverhead + payload_length;
+    return expected_length <= available_length ? expected_length : 0;
+}
+
 EncodedFrame encode_frame(const Frame& frame) noexcept {
     const auto payload_length = static_cast<std::size_t>(
         std::min<std::uint8_t>(frame.payload_length, static_cast<std::uint8_t>(kMaxPayloadSize)));
