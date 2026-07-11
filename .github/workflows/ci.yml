@@ -20,15 +20,15 @@ jobs:
       - name: Configure
         run: cmake -S . -B build -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
       - name: Build
-        run: cmake --build build --parallel
+        run: cmake --build build --config Release --parallel
       - name: Test
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build -C Release --output-on-failure
       - name: Install
-        run: cmake --install build --prefix install
+        run: cmake --install build --config Release --prefix install
       - name: Configure installed-package consumer
         run: cmake -S tests/cmake_consumer -B consumer-build -DCMAKE_PREFIX_PATH="${{ github.workspace }}/install"
       - name: Build installed-package consumer
-        run: cmake --build consumer-build --parallel
+        run: cmake --build consumer-build --config Release --parallel
 
   warnings-as-errors:
     runs-on: ubuntu-latest
@@ -39,6 +39,6 @@ jobs:
           CXXFLAGS: -Werror
         run: cmake -S . -B build-strict -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
       - name: Build
-        run: cmake --build build-strict --parallel
+        run: cmake --build build-strict --config Release --parallel
       - name: Test
-        run: ctest --test-dir build-strict --output-on-failure
+        run: ctest --test-dir build-strict -C Release --output-on-failure
