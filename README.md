@@ -5,7 +5,7 @@
 
 PicoMesh is a lightweight, transport-independent framework for building small distributed systems on resource-constrained microcontrollers.
 
-It is being extracted from reusable infrastructure developed for the private AETERNA research project. Research-specific inference models, voting algorithms, datasets, board-production files, and unpublished fault-management logic remain outside this repository.
+The repository contains independently implemented, reusable infrastructure only. Research-specific inference models, voting algorithms, datasets, board-production files, and unpublished fault-management logic remain outside this project.
 
 ## Current scope
 
@@ -74,7 +74,7 @@ Transport interface
 I2C / UART / CAN / USB / simulator
 ```
 
-See [docs/architecture.md](docs/architecture.md), [docs/protocol.md](docs/protocol.md), and [docs/aeterna_extraction.md](docs/aeterna_extraction.md).
+See [docs/architecture.md](docs/architecture.md), [docs/protocol.md](docs/protocol.md), and [docs/project_boundary.md](docs/project_boundary.md).
 
 ## Roadmap
 
@@ -85,9 +85,9 @@ See [docs/architecture.md](docs/architecture.md), [docs/protocol.md](docs/protoc
 - **v0.5**: CAN and USB CDC transports
 - **v1.0**: stable API and documented compatibility guarantees
 
-## Relationship to AETERNA
+## Project boundary
 
-PicoMesh reuses general infrastructure patterns from AETERNA, including compact packets, sequence numbers, node identity, heartbeat-driven liveness, and platform separation. It intentionally excludes galaxy-classification models, experimental datasets, learned weighting, research evaluation, AETERNA-specific fault scenarios, and the fixed Rev G hardware topology.
+PicoMesh provides only general communication, liveness, framing, retry, and platform-adapter mechanisms. Application-specific models, datasets, evaluation logic, experimental algorithms, and fixed hardware topologies are intentionally excluded.
 
 ## Contributing
 
