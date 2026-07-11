@@ -25,7 +25,7 @@ jobs:
 
       - name: Upload Doxygen warnings
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: picomesh-doxygen-warnings
           path: doxygen-warnings.log
@@ -48,7 +48,7 @@ jobs:
 
       - name: Upload HTML documentation
         if: steps.doxygen.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: picomesh-api-docs
           path: build-docs/html

@@ -48,7 +48,7 @@ jobs:
           mkdir -p dist
           cp build-pico/picomesh_pico_i2c_node.uf2 "dist/picomesh-i2c-node-${{ matrix.board }}.uf2"
           cp build-pico/picomesh_pico_i2c_node.elf "dist/picomesh-i2c-node-${{ matrix.board }}.elf"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: firmware-${{ matrix.board }}
           path: dist/
