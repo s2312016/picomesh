@@ -8,6 +8,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(PICOMESH_BUILD_TESTS "Build PicoMesh tests" ON)
 option(PICOMESH_BUILD_EXAMPLES "Build PicoMesh examples" ON)
 
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(PICOMESH_INSTALL_DEFAULT ON)
+else()
+    set(PICOMESH_INSTALL_DEFAULT OFF)
+endif()
+option(PICOMESH_INSTALL "Generate PicoMesh install rules" ${PICOMESH_INSTALL_DEFAULT})
+
 add_library(picomesh
     src/checksum.cpp
     src/frame.cpp
@@ -50,4 +57,46 @@ if(PICOMESH_BUILD_TESTS)
     if(PICOMESH_BUILD_EXAMPLES)
         add_test(NAME picomesh_lossy_link_simulator COMMAND picomesh_lossy_link_simulator)
     endif()
+endif()
+
+if(PICOMESH_INSTALL)
+    include(GNUInstallDirs)
+    include(CMakePackageConfigHelpers)
+
+    install(
+        TARGETS picomesh
+        EXPORT PicoMeshTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+    install(
+        DIRECTORY include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+
+    configure_package_config_file(
+        cmake/PicoMeshConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/PicoMeshConfig.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PicoMesh
+    )
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/PicoMeshConfigVersion.cmake
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
+
+    install(
+        EXPORT PicoMeshTargets
+        FILE PicoMeshTargets.cmake
+        NAMESPACE PicoMesh::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PicoMesh
+    )
+    install(
+        FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/PicoMeshConfig.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/PicoMeshConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/PicoMesh
+    )
 endif()
