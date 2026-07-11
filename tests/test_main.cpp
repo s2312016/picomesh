@@ -6,6 +6,7 @@
 #include "picomesh/checksum.h"
 #include "picomesh/frame.h"
 #include "picomesh/node_registry.h"
+#include "picomesh/sequence_tracker.h"
 
 namespace {
 
@@ -43,6 +44,16 @@ void test_bad_checksum() {
     assert(decoded.error == picomesh::DecodeError::bad_checksum);
 }
 
+void test_sequence_tracker() {
+    picomesh::SequenceTracker tracker;
+    assert(tracker.observe(1, 254) == picomesh::SequenceState::first);
+    assert(tracker.observe(1, 255) == picomesh::SequenceState::newer);
+    assert(tracker.observe(1, 0) == picomesh::SequenceState::newer);
+    assert(tracker.observe(1, 0) == picomesh::SequenceState::duplicate);
+    assert(tracker.observe(1, 250) == picomesh::SequenceState::stale);
+    assert(tracker.observe(40, 1) == picomesh::SequenceState::invalid_node);
+}
+
 void test_registry_timeout() {
     picomesh::NodeRegistry registry(1000);
     assert(registry.observe(2, 1, 500));
@@ -59,6 +70,7 @@ int main() {
     test_checksum();
     test_frame_round_trip();
     test_bad_checksum();
+    test_sequence_tracker();
     test_registry_timeout();
     std::cout << "PicoMesh tests passed\n";
     return 0;
