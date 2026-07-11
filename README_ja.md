@@ -2,7 +2,7 @@
 
 PicoMeshは、Raspberry Pi PicoやArduinoなどの小規模マイコンで分散システムを構築するための、軽量で通信方式に依存しないフレームワークです。
 
-非公開の研究プロジェクトAETERNAで開発した基盤のうち、他の開発者が再利用できる一般部分を切り出して育てます。推論モデル、データセット、投票アルゴリズム、未発表の故障管理手法、専用基板の製造データなど、研究固有の部分はこのリポジトリには含めません。
+このリポジトリには、独立して実装した再利用可能な基盤機能のみを収録します。推論モデル、データセット、投票アルゴリズム、未発表の故障管理手法、専用基板の製造データなど、研究固有の部分は含めません。
 
 ## 現在実装済み
 
@@ -39,8 +39,8 @@ ctest --test-dir build --output-on-failure
 
 `pico_sdk_init()`後に、ルートのCMakeと`ports/pico-sdk`を`add_subdirectory`で追加します。詳細は[`ports/pico-sdk/README.md`](ports/pico-sdk/README.md)を参照してください。
 
-## AETERNAとの境界
+## 公開範囲
 
-PicoMeshへ移すものは、通信、ノード管理、シーケンス番号、ハートビート、再送などの汎用機能です。AETERNA側には、研究独自の推論、評価、合議、重み付け、実験データ、故障シナリオ、専用基板構成を残します。
+PicoMeshには、通信、ノード管理、シーケンス番号、ハートビート、再送、プラットフォーム接続などの汎用機能だけを含めます。研究固有の推論、評価、合議、重み付け、実験データ、故障シナリオ、専用基板構成は対象外です。
 
-詳細は[英語README](README.md)、[アーキテクチャ](docs/architecture.md)、[通信仕様](docs/protocol.md)、[抽出方針](docs/aeterna_extraction.md)を参照してください。
+詳細は[英語README](README.md)、[アーキテクチャ](docs/architecture.md)、[通信仕様](docs/protocol.md)、[公開範囲](docs/project_boundary.md)を参照してください。
