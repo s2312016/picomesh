@@ -1,0 +1,40 @@
+name: Python tools
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile scripts
+        run: python -m compileall -q scripts tests/python
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests/python -v
+
+      - name: Smoke-test the serial log CLI
+        shell: bash
+        run: |
+          cat > sample-serial.log <<'LOG'
+          node=0 sequence=1 type=0x1
+          online nodes=1
+          send sequence=4 attempt=1 result=ok
+          ack sequence=4 status=0 matched=yes
+          LOG
+          python scripts/summarize_serial_log.py sample-serial.log
+          python scripts/summarize_serial_log.py --json sample-serial.log > summary.json
+          python -m json.tool summary.json > /dev/null
