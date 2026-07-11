@@ -53,6 +53,6 @@ cmake --build build-pico --parallel
 
 Use `-DPICO_BOARD=pico2` for Pico 2. The resulting UF2 publishes a heartbeat at address `0x42` and accepts PicoMesh command frames with optional acknowledgements.
 
-The peripheral mailbox generalizes the bounded IRQ and double-buffering lessons from AETERNA, but it does not include AETERNA's fixed 26-byte response, inference fields, fault commands, or board topology.
+The peripheral mailbox uses bounded interrupt handling and double buffering, but it does not include application-specific inference fields, experimental fault commands, private payloads, or fixed board topology.
 
 Do not vendor the Pico SDK or FreeRTOS into PicoMesh. Consumers should provide those dependencies through their own build environment.
