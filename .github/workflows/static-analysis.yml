@@ -20,28 +20,66 @@ jobs:
           sudo apt-get install --yes cppcheck
 
       - name: Run cppcheck
-        run: >-
-          cppcheck
-          --enable=warning,style,performance,portability
-          --error-exitcode=1
-          --inline-suppr
-          --suppress=missingIncludeSystem
-          --suppress=unusedFunction
-          --std=c++17
-          -I include
-          src include
+        id: cppcheck
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          cppcheck \
+            --enable=warning,style,performance,portability \
+            --error-exitcode=1 \
+            --inline-suppr \
+            --suppress=missingIncludeSystem \
+            --suppress=unusedFunction \
+            --std=c++17 \
+            -I include \
+            src include 2>&1 | tee cppcheck.log
+
+      - name: Upload cppcheck diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: picomesh-cppcheck-diagnostics
+          path: cppcheck.log
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Enforce cppcheck result
+        if: steps.cppcheck.outcome != 'success'
+        run: exit 1
 
   formatting:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check clang-format
+      - name: Generate clang-format patch
+        id: format
+        continue-on-error: true
         shell: bash
         run: |
           mapfile -t files < <(git ls-files '*.cpp' '*.h' '*.hpp' '*.ino')
           if [ "${#files[@]}" -eq 0 ]; then
             echo "No C/C++ files found"
+            : > clang-format.patch
             exit 0
           fi
-          clang-format --dry-run --Werror "${files[@]}"
+          clang-format -i "${files[@]}"
+          git diff --binary > clang-format.patch
+          if [[ -s clang-format.patch ]]; then
+            cat clang-format.patch
+            exit 1
+          fi
+
+      - name: Upload clang-format patch
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: picomesh-clang-format-patch
+          path: clang-format.patch
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Enforce clang-format result
+        if: steps.format.outcome != 'success'
+        run: exit 1
