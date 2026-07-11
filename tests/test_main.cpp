@@ -42,6 +42,22 @@ void test_frame_round_trip() {
     assert(decoded.frame.payload[2] == 0x30);
 }
 
+void test_frame_length_from_padded_read() {
+    const auto encoded = picomesh::encode_frame(sample_command());
+    std::array<std::uint8_t, picomesh::kMaxEncodedFrameSize> padded{};
+    for (std::size_t i = 0; i < encoded.length; ++i) {
+        padded[i] = encoded.bytes[i];
+    }
+
+    const auto detected = picomesh::frame_length_from_prefix(padded.data(), padded.size());
+    assert(detected == encoded.length);
+    assert(picomesh::decode_frame(padded.data(), detected));
+    assert(picomesh::frame_length_from_prefix(padded.data(), picomesh::kFrameHeaderSize) == 0);
+
+    padded[0] = 0;
+    assert(picomesh::frame_length_from_prefix(padded.data(), padded.size()) == 0);
+}
+
 void test_bad_checksum() {
     picomesh::Frame frame;
     auto damaged = picomesh::encode_frame(frame);
@@ -155,6 +171,7 @@ void test_stream_decoder() {
 int main() {
     test_checksum();
     test_frame_round_trip();
+    test_frame_length_from_padded_read();
     test_bad_checksum();
     test_sequence_tracker();
     test_registry_timeout();
