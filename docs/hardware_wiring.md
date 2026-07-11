@@ -33,7 +33,7 @@ node 1 -> 0x43
 node 2 -> 0x44
 ```
 
-PicoMesh does not require this convention and does not assume AETERNA's three-node cluster or nine-node backplane topology.
+PicoMesh does not require this convention and does not assume a fixed cluster count, node count, backplane, or board revision.
 
 ## Node identity
 
