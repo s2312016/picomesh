@@ -46,6 +46,12 @@ if(PICOMESH_BUILD_EXAMPLES)
 
     add_executable(picomesh_lossy_link_simulator examples/lossy_link_simulator.cpp)
     target_link_libraries(picomesh_lossy_link_simulator PRIVATE PicoMesh::picomesh)
+
+    add_executable(picomesh_frame_codec_example examples/frame_codec_example.cpp)
+    target_link_libraries(picomesh_frame_codec_example PRIVATE PicoMesh::picomesh)
+
+    add_executable(picomesh_reliable_queue_example examples/reliable_queue_example.cpp)
+    target_link_libraries(picomesh_reliable_queue_example PRIVATE PicoMesh::picomesh)
 endif()
 
 if(PICOMESH_BUILD_TESTS)
@@ -56,6 +62,8 @@ if(PICOMESH_BUILD_TESTS)
 
     if(PICOMESH_BUILD_EXAMPLES)
         add_test(NAME picomesh_lossy_link_simulator COMMAND picomesh_lossy_link_simulator)
+        add_test(NAME picomesh_frame_codec_example COMMAND picomesh_frame_codec_example)
+        add_test(NAME picomesh_reliable_queue_example COMMAND picomesh_reliable_queue_example)
     endif()
 endif()
 
