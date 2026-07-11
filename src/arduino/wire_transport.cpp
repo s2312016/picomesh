@@ -41,7 +41,9 @@ std::size_t WireControllerTransport::receive(
     while (wire_->available()) {
         (void)wire_->read();
     }
-    return count;
+
+    const std::size_t frame_length = frame_length_from_prefix(destination, count);
+    return frame_length != 0 ? frame_length : count;
 }
 
 bool WirePeripheralEndpoint::begin(
