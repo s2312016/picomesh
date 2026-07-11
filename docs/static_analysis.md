@@ -4,15 +4,18 @@ PicoMesh uses automated analysis to catch portable C++ defects before merge.
 
 ## Blocking checks
 
-`cppcheck` runs on the portable core and public headers with warning, style, performance, and portability diagnostics enabled. New findings fail the workflow and should be fixed or narrowly suppressed with an explanation close to the affected code.
+`cppcheck` runs on the portable core and public headers with warning, performance, and portability diagnostics enabled. New findings fail the workflow and should be fixed or narrowly suppressed with an explanation close to the affected code.
 
-## Formatting rollout
+`unusedFunction` is suppressed because PicoMesh is a library and public entry points are intentionally not called from the library itself.
 
-`clang-format` checks all tracked C, C++, header, and Arduino sketch files. During the initial rollout this job is report-only so that existing formatting can be normalized in a focused follow-up change without mixing style-only edits into behavioral work.
+## Advisory checks
 
-After the repository is normalized, remove `continue-on-error` from the formatting job. From that point onward, contributors should run:
+During the initial rollout, `cppcheck` style diagnostics and `clang-format` findings are reported without blocking a pull request. This keeps the first enforcement change focused while existing sources are normalized in separate style-only work.
+
+After the repository is normalized, remove `continue-on-error` from both advisory steps. Contributors should then run:
 
 ```sh
+cppcheck --enable=warning,style,performance,portability --std=c++17 -I include src include
 clang-format -i $(git ls-files '*.cpp' '*.h' '*.hpp' '*.ino')
 ```
 
