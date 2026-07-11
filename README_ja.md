@@ -18,10 +18,10 @@ PicoMeshは、Raspberry Pi PicoやArduinoなどの小規模マイコンで分散
 - I2C、UART、CAN、USB CDC、シミュレータ向け通信抽象化
 - Arduino Wireのコントローラ／周辺機器アダプタ
 - Pico/Pico 2 SDKのI2Cコントローラ、I2C周辺機器、UARTアダプタ
-- PC用テスト、損失リンクシミュレータ、サニタイザ、CodeQL
+- PC用テスト、損失リンクシミュレータ、サニタイザ、静的解析、CodeQL
 - CMakeインストールパッケージ、Arduino／PlatformIO用メタデータ
 
-固定上限は[`docs/resource_limits.md`](docs/resource_limits.md)にまとめています。
+固定上限は[`docs/resource_limits.md`](docs/resource_limits.md)にまとめています。初めて利用する場合は[`docs/getting_started.md`](docs/getting_started.md)と[`docs/examples.md`](docs/examples.md)から確認してください。
 
 ## PCでのビルド
 
@@ -29,6 +29,8 @@ PicoMeshは、Raspberry Pi PicoやArduinoなどの小規模マイコンで分散
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel
 ctest --test-dir build --output-on-failure
+./build/picomesh_frame_codec_example
+./build/picomesh_reliable_queue_example
 ./build/picomesh_host_simulator
 ```
 
@@ -49,12 +51,16 @@ ctest --test-dir build --output-on-failure
 
 ## 主要ドキュメント
 
+- [導入手順](docs/getting_started.md)
+- [サンプル一覧](docs/examples.md)
+- [よくある質問](docs/faq.md)
 - [アーキテクチャ](docs/architecture.md)
 - [通信仕様](docs/protocol.md)
 - [互換性方針](docs/compatibility.md)
 - [固定リソース上限](docs/resource_limits.md)
 - [用途例](docs/use_cases.md)
 - [実機検証手順](docs/hardware_validation.md)
+- [静的解析方針](docs/static_analysis.md)
 - [公開範囲](docs/project_boundary.md)
 
 ## 保守と貢献
