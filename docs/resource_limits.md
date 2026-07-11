@@ -32,6 +32,12 @@ The endpoint uses two bounded receive buffers and two bounded transmit buffers. 
 
 The Arduino endpoint stores one bounded receive frame and one bounded transmit frame. Actual transferable length can be lower than PicoMesh's 40-byte maximum when the selected Arduino core uses a smaller internal Wire buffer.
 
+## Compiled firmware reports
+
+The Pico SDK workflow builds the reference I2C node for Pico and Pico 2, runs `arm-none-eabi-size` on each ELF, and uploads the ELF, UF2, and text size report as per-board artifacts. These reports make toolchain and example growth visible during review.
+
+A reference-example ELF includes the Pico SDK startup, standard library, USB stdio, I2C driver, and application code. Its reported flash and RAM values are not the standalone cost of the portable PicoMesh core and must not be advertised as such. Compare reports produced by the same workflow and toolchain configuration.
+
 ## Timing limits
 
 Node liveness and retry deadlines use unsigned 32-bit millisecond arithmetic with wrap-safe elapsed-time comparisons. Applications should keep individual timeout intervals below half of the 32-bit timer range.
