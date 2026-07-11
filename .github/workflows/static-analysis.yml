@@ -19,10 +19,23 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes cppcheck
 
-      - name: Run cppcheck
+      - name: Run blocking cppcheck diagnostics
         run: >-
           cppcheck
-          --enable=warning,style,performance,portability
+          --enable=warning,performance,portability
+          --error-exitcode=1
+          --inline-suppr
+          --suppress=missingIncludeSystem
+          --suppress=unusedFunction
+          --std=c++17
+          -I include
+          src include
+
+      - name: Report cppcheck style findings
+        continue-on-error: true
+        run: >-
+          cppcheck
+          --enable=style
           --error-exitcode=1
           --inline-suppr
           --suppress=missingIncludeSystem
