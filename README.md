@@ -5,18 +5,21 @@
 
 PicoMesh is a lightweight, transport-independent framework for building small distributed systems on resource-constrained microcontrollers.
 
-It is being extracted from reusable infrastructure developed for the private AETERNA research project. Research-specific inference models, voting algorithms, datasets, and unpublished fault-management logic remain outside this repository.
+It is being extracted from reusable infrastructure developed for the private AETERNA research project. Research-specific inference models, voting algorithms, datasets, board-production files, and unpublished fault-management logic remain outside this repository.
 
 ## Current scope
 
-- Compact versioned frames with an 8-bit integrity check
+- Fixed-capacity, versioned frames with an 8-bit integrity check
+- No heap allocation in the frame codec, stream decoder, or retry queue
 - Node heartbeat and timeout tracking
-- Transport abstraction suitable for I2C, UART, CAN, USB CDC, or host simulation
-- Portable C++17 core
-- Host-side tests and simulator
-- Planned Arduino and Raspberry Pi Pico SDK ports
+- Sequence wraparound, duplicate, and stale-packet detection
+- Acknowledgements and configurable retries
+- Transport abstraction for I2C, UART, CAN, USB CDC, or host simulation
+- Arduino Wire controller/peripheral adapters and examples
+- Raspberry Pi Pico SDK I2C-controller and UART adapters
+- Portable C++17 core with host-side tests and simulator
 
-## Quick start
+## Host quick start
 
 ```sh
 cmake -S . -B build
@@ -25,46 +28,66 @@ ctest --test-dir build --output-on-failure
 ./build/picomesh_host_simulator
 ```
 
-## Example
+## Arduino quick start
+
+Install this repository as an Arduino library, then open one of these examples:
+
+- `ArduinoHeartbeatNode`
+- `ArduinoHeartbeatController`
+
+The controller and node use I2C address `0x42` at 100 kHz. Keep all Pico-side I2C signals at 3.3 V. Use a bidirectional level shifter when a controller board has 5 V pull-ups.
 
 ```cpp
-#include "picomesh/frame.h"
+#include <PicoMesh.h>
 
-picomesh::Frame frame;
-frame.type = picomesh::MessageType::heartbeat;
-frame.node_id = 2;
-frame.sequence = 7;
+picomesh::Frame heartbeat;
+heartbeat.type = picomesh::MessageType::heartbeat;
+heartbeat.node_id = 2;
+heartbeat.sequence = 7;
 
-auto bytes = picomesh::encode_frame(frame);
-auto decoded = picomesh::decode_frame(bytes);
+const auto encoded = picomesh::encode_frame(heartbeat);
 ```
+
+## Pico SDK integration
+
+After `pico_sdk_init()`, add both PicoMesh targets:
+
+```cmake
+add_subdirectory(path/to/picomesh picomesh-build)
+add_subdirectory(path/to/picomesh/ports/pico-sdk picomesh-pico-build)
+
+target_link_libraries(my_firmware
+    PRIVATE PicoMesh::picomesh PicoMesh::pico_transport)
+```
+
+See [ports/pico-sdk/README.md](ports/pico-sdk/README.md).
 
 ## Architecture
 
 ```text
 Application / research logic
           |
-PicoMesh node registry and protocol
+PicoMesh reliability, liveness, and protocol
           |
 Transport interface
           |
 I2C / UART / CAN / USB / simulator
 ```
 
-See [docs/architecture.md](docs/architecture.md) and [docs/protocol.md](docs/protocol.md).
+See [docs/architecture.md](docs/architecture.md), [docs/protocol.md](docs/protocol.md), and [docs/aeterna_extraction.md](docs/aeterna_extraction.md).
 
 ## Roadmap
 
-- **v0.1**: portable frame codec, checksum, heartbeat registry, host CI
-- **v0.2**: Arduino Wire controller and node examples
-- **v0.3**: Pico SDK I2C/UART adapters and hardware-in-the-loop tests
-- **v0.4**: retries, acknowledgements, duplicate detection, and command routing
-- **v0.5**: optional FreeRTOS integration
+- **v0.1**: portable core, Arduino Wire support, Pico controller/UART adapters, host CI
+- **v0.2**: Pico SDK I2C peripheral endpoint and hardware interoperability tests
+- **v0.3**: packet-loss simulator, retry statistics, and command routing
+- **v0.4**: optional FreeRTOS integration and bounded task mailbox
+- **v0.5**: CAN and USB CDC transports
 - **v1.0**: stable API and documented compatibility guarantees
 
 ## Relationship to AETERNA
 
-PicoMesh may reuse general infrastructure patterns from AETERNA, including compact state packets, sequence numbers, node identity, heartbeat-driven liveness, and platform separation. It intentionally excludes galaxy-classification models, experimental datasets, learned weighting, research evaluation, and AETERNA-specific hardware topology.
+PicoMesh reuses general infrastructure patterns from AETERNA, including compact packets, sequence numbers, node identity, heartbeat-driven liveness, and platform separation. It intentionally excludes galaxy-classification models, experimental datasets, learned weighting, research evaluation, AETERNA-specific fault scenarios, and the fixed Rev G hardware topology.
 
 ## Contributing
 
