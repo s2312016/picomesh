@@ -1,0 +1,57 @@
+name: Coverage
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install gcovr
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gcovr
+
+      - name: Configure instrumented build
+        run: >-
+          cmake
+          -S .
+          -B build-coverage
+          -DCMAKE_BUILD_TYPE=Debug
+          -DPICOMESH_INSTALL=OFF
+          -DCMAKE_CXX_FLAGS="--coverage -O0 -g"
+          -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+
+      - name: Build
+        run: cmake --build build-coverage --parallel
+
+      - name: Run tests
+        run: ctest --test-dir build-coverage --output-on-failure
+
+      - name: Generate reports
+        run: |
+          mkdir -p coverage
+          gcovr \
+            --root . \
+            --filter 'src/' \
+            --filter 'include/' \
+            --exclude 'build-coverage/' \
+            --xml coverage/coverage.xml \
+            --html-details coverage/index.html \
+            --print-summary
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: picomesh-coverage
+          path: coverage
+          if-no-files-found: error
+          retention-days: 14
