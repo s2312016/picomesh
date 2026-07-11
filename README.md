@@ -56,6 +56,7 @@ Install this repository as an Arduino library, then open one of these examples:
 - `ArduinoHeartbeatNode`
 - `ArduinoHeartbeatController`
 - `ArduinoMultiNodeController`
+- `ArduinoReliableCommandController`
 
 The reference I2C examples use address `0x42` at 100 kHz. Keep Pico-side I2C signals at 3.3 V and read [docs/hardware_wiring.md](docs/hardware_wiring.md) before connecting mixed-voltage boards.
 
