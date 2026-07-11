@@ -6,58 +6,58 @@
 
 namespace picomesh {
 
-std::vector<std::uint8_t> encode_frame(const Frame& frame) {
+EncodedFrame encode_frame(const Frame& frame) noexcept {
     const auto payload_length = static_cast<std::size_t>(
         std::min<std::uint8_t>(frame.payload_length, static_cast<std::uint8_t>(kMaxPayloadSize)));
 
-    std::vector<std::uint8_t> encoded;
-    encoded.reserve(kFrameOverhead + payload_length);
-    encoded.push_back(kFrameMagic);
-    encoded.push_back(kProtocolVersion);
-    encoded.push_back(static_cast<std::uint8_t>(frame.type));
-    encoded.push_back(frame.flags);
-    encoded.push_back(frame.node_id);
-    encoded.push_back(frame.sequence);
-    encoded.push_back(static_cast<std::uint8_t>(payload_length));
-    encoded.insert(encoded.end(), frame.payload.begin(), frame.payload.begin() + payload_length);
-    encoded.push_back(checksum8(encoded.data(), encoded.size()));
+    EncodedFrame encoded;
+    encoded.bytes[0] = kFrameMagic;
+    encoded.bytes[1] = kProtocolVersion;
+    encoded.bytes[2] = static_cast<std::uint8_t>(frame.type);
+    encoded.bytes[3] = frame.flags;
+    encoded.bytes[4] = frame.node_id;
+    encoded.bytes[5] = frame.sequence;
+    encoded.bytes[6] = static_cast<std::uint8_t>(payload_length);
+    std::copy_n(frame.payload.begin(), payload_length, encoded.bytes.begin() + kFrameHeaderSize);
+    encoded.length = kFrameOverhead + payload_length;
+    encoded.bytes[encoded.length - 1] = checksum8(encoded.bytes.data(), encoded.length - 1);
     return encoded;
 }
 
 DecodeResult decode_frame(const std::uint8_t* data, const std::size_t length) noexcept {
     if (data == nullptr || length < kFrameOverhead) {
-        return {std::nullopt, DecodeError::too_short};
+        return {{}, DecodeError::too_short};
     }
     if (data[0] != kFrameMagic) {
-        return {std::nullopt, DecodeError::bad_magic};
+        return {{}, DecodeError::bad_magic};
     }
     if (data[1] != kProtocolVersion) {
-        return {std::nullopt, DecodeError::unsupported_version};
+        return {{}, DecodeError::unsupported_version};
     }
 
     const auto payload_length = static_cast<std::size_t>(data[6]);
     if (payload_length > kMaxPayloadSize) {
-        return {std::nullopt, DecodeError::payload_too_large};
+        return {{}, DecodeError::payload_too_large};
     }
     if (length != kFrameOverhead + payload_length) {
-        return {std::nullopt, DecodeError::length_mismatch};
+        return {{}, DecodeError::length_mismatch};
     }
     if (!verify_checksum8(data, length)) {
-        return {std::nullopt, DecodeError::bad_checksum};
+        return {{}, DecodeError::bad_checksum};
     }
 
-    Frame frame;
-    frame.type = static_cast<MessageType>(data[2]);
-    frame.flags = data[3];
-    frame.node_id = data[4];
-    frame.sequence = data[5];
-    frame.payload_length = static_cast<std::uint8_t>(payload_length);
-    std::copy_n(data + kFrameHeaderSize, payload_length, frame.payload.begin());
-    return {frame, DecodeError::none};
+    DecodeResult result;
+    result.frame.type = static_cast<MessageType>(data[2]);
+    result.frame.flags = data[3];
+    result.frame.node_id = data[4];
+    result.frame.sequence = data[5];
+    result.frame.payload_length = static_cast<std::uint8_t>(payload_length);
+    std::copy_n(data + kFrameHeaderSize, payload_length, result.frame.payload.begin());
+    return result;
 }
 
-DecodeResult decode_frame(const std::vector<std::uint8_t>& data) noexcept {
-    return decode_frame(data.data(), data.size());
+DecodeResult decode_frame(const EncodedFrame& data) noexcept {
+    return decode_frame(data.bytes.data(), data.length);
 }
 
 }  // namespace picomesh
