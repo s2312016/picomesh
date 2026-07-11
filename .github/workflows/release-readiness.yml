@@ -50,3 +50,42 @@ jobs:
           path: PicoMesh-source.zip
           if-no-files-found: error
           retention-days: 14
+
+  arduino-source-archive:
+    needs: metadata-and-archive
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download source candidate
+        uses: actions/download-artifact@v4
+        with:
+          name: picomesh-source-candidate
+
+      - name: Install archived library
+        run: |
+          mkdir -p "$HOME/Arduino/libraries"
+          unzip -q PicoMesh-source.zip -d "$HOME/Arduino/libraries"
+          test -f "$HOME/Arduino/libraries/PicoMesh/library.properties"
+          test -f "$HOME/Arduino/libraries/PicoMesh/src/PicoMesh.h"
+
+      - name: Set up Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Install UNO R4 core
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:renesas_uno
+
+      - name: Compile archived examples
+        shell: bash
+        run: |
+          for sketch in \
+            ArduinoHeartbeatNode \
+            ArduinoHeartbeatController \
+            ArduinoMultiNodeController \
+            ArduinoReliableCommandController
+          do
+            echo "Compiling $sketch from source archive"
+            arduino-cli compile \
+              --fqbn arduino:renesas_uno:minima \
+              "$HOME/Arduino/libraries/PicoMesh/examples/$sketch"
+          done
