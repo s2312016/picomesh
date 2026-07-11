@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Configure
-        run: cmake -S . -B build -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
       - name: Build
         run: cmake --build build --config Release --parallel
       - name: Test
@@ -26,7 +26,7 @@ jobs:
       - name: Install
         run: cmake --install build --config Release --prefix "${{ github.workspace }}/install"
       - name: Configure installed-package consumer
-        run: cmake -S tests/cmake_consumer -B consumer-build -DPicoMesh_DIR="${{ github.workspace }}/install/lib/cmake/PicoMesh"
+        run: cmake -S tests/cmake_consumer -B consumer-build -DCMAKE_BUILD_TYPE=Release -DPicoMesh_DIR="${{ github.workspace }}/install/lib/cmake/PicoMesh"
       - name: Build installed-package consumer
         run: cmake --build consumer-build --config Release --parallel
 
@@ -37,7 +37,7 @@ jobs:
       - name: Configure
         env:
           CXXFLAGS: -Werror
-        run: cmake -S . -B build-strict -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
+        run: cmake -S . -B build-strict -DCMAKE_BUILD_TYPE=Release -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
       - name: Build
         run: cmake --build build-strict --config Release --parallel
       - name: Test
