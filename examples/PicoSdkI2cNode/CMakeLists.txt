@@ -16,6 +16,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
+set(PICOMESH_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(PICOMESH_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(PICOMESH_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../.. picomesh-build)
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/../../ports/pico-sdk picomesh-pico-build)
 
