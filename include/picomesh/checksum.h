@@ -25,4 +25,4 @@ std::uint8_t checksum8(const std::uint8_t* data, std::size_t length) noexcept;
  */
 bool verify_checksum8(const std::uint8_t* data, std::size_t length) noexcept;
 
-}  // namespace picomesh
+} // namespace picomesh

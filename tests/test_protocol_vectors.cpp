@@ -1,31 +1,28 @@
+#include "picomesh/frame.h"
+#include "picomesh/reliability.h"
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
 
-#include "picomesh/frame.h"
-#include "picomesh/reliability.h"
-
 namespace {
 
 template <std::size_t N>
-void expect_bytes(
-    const picomesh::EncodedFrame& encoded,
-    const std::array<std::uint8_t, N>& expected,
-    const char* name) {
+void expect_bytes(const picomesh::EncodedFrame& encoded,
+                  const std::array<std::uint8_t, N>& expected, const char* name) {
     if (encoded.length != expected.size()) {
-        std::cerr << name << ": expected length " << expected.size()
-                  << ", got " << encoded.length << '\n';
+        std::cerr << name << ": expected length " << expected.size() << ", got " << encoded.length
+                  << '\n';
         std::exit(1);
     }
 
     for (std::size_t i = 0; i < expected.size(); ++i) {
         if (encoded.bytes[i] != expected[i]) {
-            std::cerr << name << ": byte " << i << " expected 0x"
-                      << std::hex << static_cast<unsigned>(expected[i])
-                      << ", got 0x" << static_cast<unsigned>(encoded.bytes[i])
-                      << std::dec << '\n';
+            std::cerr << name << ": byte " << i << " expected 0x" << std::hex
+                      << static_cast<unsigned>(expected[i]) << ", got 0x"
+                      << static_cast<unsigned>(encoded.bytes[i]) << std::dec << '\n';
             std::exit(1);
         }
     }
@@ -66,11 +63,7 @@ void command_vector() {
 }
 
 void acknowledgement_vector() {
-    const auto frame = picomesh::make_ack_frame(
-        7,
-        43,
-        42,
-        picomesh::AckStatus::accepted);
+    const auto frame = picomesh::make_ack_frame(7, 43, 42, picomesh::AckStatus::accepted);
 
     constexpr std::array<std::uint8_t, 10> expected{
         0xB7, 0x01, 0x11, 0x00, 0x07, 0x2B, 0x02, 0x2A, 0x00, 0xD9,
@@ -93,7 +86,7 @@ void state_vector() {
     expect_bytes(picomesh::encode_frame(frame), expected, "state payload");
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     heartbeat_vector();

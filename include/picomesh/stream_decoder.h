@@ -1,26 +1,26 @@
 #pragma once
 
+#include "picomesh/frame.h"
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
-
-#include "picomesh/frame.h"
 
 namespace picomesh {
 
 /** @brief Outcome after feeding one byte to StreamDecoder. */
 enum class StreamStatus {
-    need_more,    ///< A candidate frame is incomplete.
-    frame_ready,  ///< One complete valid frame is available.
-    frame_error,  ///< A candidate frame failed strict validation.
-    discarded,    ///< Noise was discarded before a magic byte.
+    need_more,   ///< A candidate frame is incomplete.
+    frame_ready, ///< One complete valid frame is available.
+    frame_error, ///< A candidate frame failed strict validation.
+    discarded,   ///< Noise was discarded before a magic byte.
 };
 
 /** @brief Result returned after one byte is consumed. */
 struct StreamResult {
-    StreamStatus status{StreamStatus::need_more};  ///< Decoder outcome.
-    Frame frame{};                                 ///< Valid only for `frame_ready`.
-    DecodeError error{DecodeError::none};          ///< Failure reason for `frame_error`.
+    StreamStatus status{StreamStatus::need_more}; ///< Decoder outcome.
+    Frame frame{};                                ///< Valid only for `frame_ready`.
+    DecodeError error{DecodeError::none};         ///< Failure reason for `frame_error`.
 };
 
 /**
@@ -31,7 +31,7 @@ struct StreamResult {
  * The decoder performs no dynamic allocation.
  */
 class StreamDecoder {
-public:
+  public:
     /**
      * @brief Consume one byte from a continuous stream.
      * @param byte Next received byte.
@@ -43,9 +43,11 @@ public:
     void reset() noexcept;
 
     /** @return Number of bytes retained for the current candidate frame. */
-    std::size_t buffered_size() const noexcept { return size_; }
+    std::size_t buffered_size() const noexcept {
+        return size_;
+    }
 
-private:
+  private:
     StreamResult fail(DecodeError error, std::uint8_t last_byte) noexcept;
 
     std::array<std::uint8_t, kMaxEncodedFrameSize> buffer_{};
@@ -53,4 +55,4 @@ private:
     std::size_t expected_length_{0};
 };
 
-}  // namespace picomesh
+} // namespace picomesh

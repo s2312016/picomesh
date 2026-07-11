@@ -1,7 +1,7 @@
+#include "picomesh/frame.h"
+
 #include <cstdint>
 #include <iostream>
-
-#include "picomesh/frame.h"
 
 int main() {
     picomesh::Frame frame;
@@ -16,13 +16,12 @@ int main() {
     const auto decoded = picomesh::decode_frame(encoded);
 
     if (!decoded) {
-        std::cerr << "Frame decode failed with error "
-                  << static_cast<unsigned>(decoded.error) << '\n';
+        std::cerr << "Frame decode failed with error " << static_cast<unsigned>(decoded.error)
+                  << '\n';
         return 1;
     }
 
-    if (decoded.frame.node_id != frame.node_id ||
-        decoded.frame.sequence != frame.sequence ||
+    if (decoded.frame.node_id != frame.node_id || decoded.frame.sequence != frame.sequence ||
         decoded.frame.payload_length != frame.payload_length) {
         std::cerr << "Decoded frame does not match the source frame\n";
         return 2;
@@ -30,7 +29,6 @@ int main() {
 
     std::cout << "Decoded node=" << static_cast<unsigned>(decoded.frame.node_id)
               << " sequence=" << static_cast<unsigned>(decoded.frame.sequence)
-              << " payload[0]=" << static_cast<unsigned>(decoded.frame.payload[0])
-              << '\n';
+              << " payload[0]=" << static_cast<unsigned>(decoded.frame.payload[0]) << '\n';
     return 0;
 }

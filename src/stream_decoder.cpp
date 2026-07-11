@@ -7,9 +7,7 @@ void StreamDecoder::reset() noexcept {
     expected_length_ = 0;
 }
 
-StreamResult StreamDecoder::fail(
-    const DecodeError error,
-    const std::uint8_t last_byte) noexcept {
+StreamResult StreamDecoder::fail(const DecodeError error, const std::uint8_t last_byte) noexcept {
     reset();
     if (last_byte == kFrameMagic) {
         buffer_[0] = last_byte;
@@ -56,4 +54,4 @@ StreamResult StreamDecoder::feed(const std::uint8_t byte) noexcept {
     return {};
 }
 
-}  // namespace picomesh
+} // namespace picomesh

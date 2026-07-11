@@ -1,7 +1,7 @@
-#include <cstdint>
-
 #include "picomesh/frame.h"
 #include "picomesh/version.h"
+
+#include <cstdint>
 
 int main() {
     picomesh::Frame frame;

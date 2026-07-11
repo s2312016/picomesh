@@ -1,14 +1,13 @@
 #include "picomesh/frame.h"
 
-#include <algorithm>
-
 #include "picomesh/checksum.h"
+
+#include <algorithm>
 
 namespace picomesh {
 
-std::size_t frame_length_from_prefix(
-    const std::uint8_t* data,
-    const std::size_t available_length) noexcept {
+std::size_t frame_length_from_prefix(const std::uint8_t* data,
+                                     const std::size_t available_length) noexcept {
     if (data == nullptr || available_length < kFrameHeaderSize) {
         return 0;
     }
@@ -79,4 +78,4 @@ DecodeResult decode_frame(const EncodedFrame& data) noexcept {
     return decode_frame(data.bytes.data(), data.length);
 }
 
-}  // namespace picomesh
+} // namespace picomesh

@@ -7,14 +7,11 @@ namespace picomesh::pico {
 
 I2cPeripheralEndpoint* I2cPeripheralEndpoint::endpoints_[2] = {nullptr, nullptr};
 
-I2cControllerTransport::I2cControllerTransport(
-    i2c_inst_t* instance,
-    const std::uint8_t address) noexcept
+I2cControllerTransport::I2cControllerTransport(i2c_inst_t* instance,
+                                               const std::uint8_t address) noexcept
     : instance_(instance), address_(address) {}
 
-bool I2cControllerTransport::send(
-    const std::uint8_t* data,
-    const std::size_t length) {
+bool I2cControllerTransport::send(const std::uint8_t* data, const std::size_t length) {
     if (instance_ == nullptr || data == nullptr || length == 0) {
         return false;
     }
@@ -23,9 +20,7 @@ bool I2cControllerTransport::send(
     return written == static_cast<int>(length);
 }
 
-std::size_t I2cControllerTransport::receive(
-    std::uint8_t* destination,
-    const std::size_t capacity) {
+std::size_t I2cControllerTransport::receive(std::uint8_t* destination, const std::size_t capacity) {
     if (instance_ == nullptr || destination == nullptr || capacity == 0) {
         return 0;
     }
@@ -40,9 +35,7 @@ std::size_t I2cControllerTransport::receive(
     return frame_length != 0 ? frame_length : count;
 }
 
-bool UartTransport::send(
-    const std::uint8_t* data,
-    const std::size_t length) {
+bool UartTransport::send(const std::uint8_t* data, const std::size_t length) {
     if (instance_ == nullptr || data == nullptr || length == 0) {
         return false;
     }
@@ -51,9 +44,7 @@ bool UartTransport::send(
     return true;
 }
 
-std::size_t UartTransport::receive(
-    std::uint8_t* destination,
-    const std::size_t capacity) {
+std::size_t UartTransport::receive(std::uint8_t* destination, const std::size_t capacity) {
     if (instance_ == nullptr || destination == nullptr || capacity == 0) {
         return 0;
     }
@@ -65,9 +56,7 @@ std::size_t UartTransport::receive(
     return count;
 }
 
-bool I2cPeripheralEndpoint::begin(
-    i2c_inst_t* instance,
-    const std::uint8_t address) noexcept {
+bool I2cPeripheralEndpoint::begin(i2c_inst_t* instance, const std::uint8_t address) noexcept {
     if (instance == nullptr || address > 0x7f) {
         return false;
     }
@@ -87,10 +76,8 @@ bool I2cPeripheralEndpoint::begin(
     irq_set_enabled(irq, true);
 
     i2c_get_hw(instance_)->intr_mask =
-        I2C_IC_INTR_MASK_M_RX_FULL_BITS |
-        I2C_IC_INTR_MASK_M_RD_REQ_BITS |
-        I2C_IC_INTR_MASK_M_STOP_DET_BITS |
-        I2C_IC_INTR_MASK_M_TX_ABRT_BITS |
+        I2C_IC_INTR_MASK_M_RX_FULL_BITS | I2C_IC_INTR_MASK_M_RD_REQ_BITS |
+        I2C_IC_INTR_MASK_M_STOP_DET_BITS | I2C_IC_INTR_MASK_M_TX_ABRT_BITS |
         I2C_IC_INTR_MASK_M_RX_OVER_BITS;
     return true;
 }
@@ -223,4 +210,4 @@ void I2cPeripheralEndpoint::handle_irq() noexcept {
     }
 }
 
-}  // namespace picomesh::pico
+} // namespace picomesh::pico

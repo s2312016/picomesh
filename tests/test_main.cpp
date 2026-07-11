@@ -1,16 +1,16 @@
-#include <array>
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <iostream>
-#include <limits>
-
 #include "picomesh/checksum.h"
 #include "picomesh/frame.h"
 #include "picomesh/node_registry.h"
 #include "picomesh/reliability.h"
 #include "picomesh/sequence_tracker.h"
 #include "picomesh/stream_decoder.h"
+
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <iostream>
+#include <limits>
 
 namespace {
 
@@ -19,11 +19,11 @@ namespace {
     std::exit(1);
 }
 
-#define CHECK(expression)                                                        \
-    do {                                                                         \
-        if (!(expression)) {                                                     \
-            fail_check(#expression, __FILE__, __LINE__);                         \
-        }                                                                        \
+#define CHECK(expression)                                                                          \
+    do {                                                                                           \
+        if (!(expression)) {                                                                       \
+            fail_check(#expression, __FILE__, __LINE__);                                           \
+        }                                                                                          \
     } while (false)
 
 picomesh::Frame sample_command() {
@@ -178,11 +178,7 @@ void test_registry_timer_wraparound() {
 }
 
 void test_acknowledgement_payload() {
-    const auto acknowledgement = picomesh::make_ack_frame(
-        7,
-        43,
-        42,
-        picomesh::AckStatus::accepted);
+    const auto acknowledgement = picomesh::make_ack_frame(7, 43, 42, picomesh::AckStatus::accepted);
 
     std::uint8_t acknowledged_sequence = 0;
     picomesh::AckStatus status = picomesh::AckStatus::malformed;
@@ -192,7 +188,7 @@ void test_acknowledgement_payload() {
 
     auto malformed = acknowledgement;
     malformed.type = picomesh::MessageType::command;
-    CHECK(!picomesh::parse_ack_frame(malformed, acknowledged_sequence, status));
+    CHECK(!picomesh::parse_ack_frame(malformed, acknowleded_sequence, status));
 
     malformed = acknowledgement;
     malformed.payload_length = 1;
@@ -233,8 +229,7 @@ void test_reliable_queue() {
     CHECK(queue.acknowledge(7, 42, picomesh::AckStatus::accepted) ==
           picomesh::AckResolution::not_found);
     CHECK(queue.enqueue(command, 3000) == picomesh::QueueResult::queued);
-    CHECK(queue.acknowledge(7, 42, picomesh::AckStatus::busy) ==
-          picomesh::AckResolution::rejected);
+    CHECK(queue.acknowledge(7, 42, picomesh::AckStatus::busy) == picomesh::AckResolution::rejected);
 }
 
 void test_reliable_queue_capacity_and_control() {
@@ -341,7 +336,7 @@ void test_stream_decoder_errors_and_recovery() {
     CHECK(decoder.buffered_size() == 0);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     test_checksum();

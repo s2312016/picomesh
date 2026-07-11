@@ -1,10 +1,10 @@
 #pragma once
 
+#include "picomesh/frame.h"
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
-
-#include "picomesh/frame.h"
 
 namespace picomesh {
 
@@ -15,11 +15,11 @@ constexpr std::size_t kMaxPendingTransmissions = 8;
 
 /** @brief Receiver result carried by an acknowledgement frame. */
 enum class AckStatus : std::uint8_t {
-    accepted = 0,     ///< Command was accepted.
-    rejected = 1,     ///< Command was rejected by application policy.
-    busy = 2,         ///< Receiver is temporarily unable to process it.
-    unsupported = 3,  ///< Command or capability is unsupported.
-    malformed = 4,    ///< Command payload was malformed.
+    accepted = 0,    ///< Command was accepted.
+    rejected = 1,    ///< Command was rejected by application policy.
+    busy = 2,        ///< Receiver is temporarily unable to process it.
+    unsupported = 3, ///< Command or capability is unsupported.
+    malformed = 4,   ///< Command payload was malformed.
 };
 
 /**
@@ -30,11 +30,8 @@ enum class AckStatus : std::uint8_t {
  * @param status Receiver result.
  * @return Acknowledgement frame ready for encoding.
  */
-Frame make_ack_frame(
-    std::uint8_t node_id,
-    std::uint8_t response_sequence,
-    std::uint8_t acknowledged_sequence,
-    AckStatus status) noexcept;
+Frame make_ack_frame(std::uint8_t node_id, std::uint8_t response_sequence,
+                     std::uint8_t acknowledged_sequence, AckStatus status) noexcept;
 
 /**
  * @brief Parse and validate an acknowledgement payload.
@@ -43,43 +40,41 @@ Frame make_ack_frame(
  * @param status Receives the acknowledgement status on success.
  * @return `true` when type, payload length, and status value are valid.
  */
-bool parse_ack_frame(
-    const Frame& frame,
-    std::uint8_t& acknowledged_sequence,
-    AckStatus& status) noexcept;
+bool parse_ack_frame(const Frame& frame, std::uint8_t& acknowledged_sequence,
+                     AckStatus& status) noexcept;
 
 /** @brief Retry timing and attempt limit. */
 struct RetryPolicy {
-    std::uint32_t timeout_ms{250};  ///< Delay between transmission attempts.
-    std::uint8_t max_attempts{3};   ///< Total sends before exhaustion.
+    std::uint32_t timeout_ms{250}; ///< Delay between transmission attempts.
+    std::uint8_t max_attempts{3};  ///< Total sends before exhaustion.
 };
 
 /** @brief Result of adding a frame to ReliableQueue. */
 enum class QueueResult {
-    queued,   ///< Frame was stored.
-    full,     ///< Every fixed-capacity slot is active.
-    invalid,  ///< Frame is invalid or duplicates an active node/sequence pair.
+    queued,  ///< Frame was stored.
+    full,    ///< Every fixed-capacity slot is active.
+    invalid, ///< Frame is invalid or duplicates an active node/sequence pair.
 };
 
 /** @brief Action returned by `ReliableQueue::next_due`. */
 enum class TxAction {
-    none,       ///< No frame is due.
-    send,       ///< Send the returned frame now.
-    exhausted,  ///< Attempts are exhausted and the slot was removed.
+    none,      ///< No frame is due.
+    send,      ///< Send the returned frame now.
+    exhausted, ///< Attempts are exhausted and the slot was removed.
 };
 
 /** @brief One scheduler decision from the reliable queue. */
 struct TxDecision {
-    TxAction action{TxAction::none};  ///< Required action.
-    Frame frame{};                    ///< Frame associated with the decision.
-    std::uint8_t attempts{0};         ///< Attempts made including this decision.
+    TxAction action{TxAction::none}; ///< Required action.
+    Frame frame{};                   ///< Frame associated with the decision.
+    std::uint8_t attempts{0};        ///< Attempts made including this decision.
 };
 
 /** @brief Result of resolving a pending frame with an acknowledgement. */
 enum class AckResolution {
-    not_found,  ///< No active frame matched node and sequence.
-    accepted,   ///< Matching frame was removed with accepted status.
-    rejected,   ///< Matching frame was removed with a non-accepted status.
+    not_found, ///< No active frame matched node and sequence.
+    accepted,  ///< Matching frame was removed with accepted status.
+    rejected,  ///< Matching frame was removed with a non-accepted status.
 };
 
 /**
@@ -90,7 +85,7 @@ enum class AckResolution {
  * deadline arithmetic. A frame is keyed by its node ID and sequence.
  */
 class ReliableQueue {
-public:
+  public:
     /**
      * @brief Construct a retry queue.
      * @param policy Retry timeout and total attempt limit. A zero attempt limit
@@ -120,10 +115,8 @@ public:
      * @param status Receiver result.
      * @return Resolution result.
      */
-    AckResolution acknowledge(
-        std::uint8_t node_id,
-        std::uint8_t sequence,
-        AckStatus status) noexcept;
+    AckResolution acknowledge(std::uint8_t node_id, std::uint8_t sequence,
+                              AckStatus status) noexcept;
 
     /**
      * @brief Cancel one matching pending frame.
@@ -137,7 +130,7 @@ public:
     /** @brief Remove every pending frame and reset slot state. */
     void clear() noexcept;
 
-private:
+  private:
     struct Slot {
         Frame frame{};
         std::uint32_t deadline_ms{0};
@@ -149,4 +142,4 @@ private:
     RetryPolicy policy_{};
 };
 
-}  // namespace picomesh
+} // namespace picomesh
