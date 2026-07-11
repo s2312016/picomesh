@@ -16,7 +16,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Configure
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPICOMESH_BUILD_TESTS=ON -DPICOMESH_BUILD_EXAMPLES=ON
       - name: Build
@@ -33,7 +33,7 @@ jobs:
   warnings-as-errors:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Configure
         env:
           CXXFLAGS: -Werror
@@ -46,7 +46,7 @@ jobs:
   sanitizers:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Configure
         env:
           CXXFLAGS: -fsanitize=address,undefined -fno-omit-frame-pointer
