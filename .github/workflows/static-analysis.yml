@@ -1,0 +1,53 @@
+name: Static analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes cppcheck
+
+      - name: Run cppcheck
+        run: >-
+          cppcheck
+          --enable=warning,style,performance,portability
+          --error-exitcode=1
+          --inline-suppr
+          --suppress=missingIncludeSystem
+          --std=c++17
+          -I include
+          src include
+
+  formatting:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check clang-format
+        shell: bash
+        run: |
+          mapfile -t files < <(git ls-files '*.cpp' '*.h' '*.hpp' '*.ino')
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No C/C++ files found"
+            exit 0
+          fi
+          clang-format --dry-run --Werror "${files[@]}"
+
+      - name: Explain rollout status
+        if: failure()
+        run: |
+          echo "Formatting is report-only during the initial rollout."
+          echo "A follow-up change will normalize existing sources before enforcement."
