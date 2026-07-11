@@ -1,0 +1,33 @@
+{
+  "name": "PicoMesh",
+  "version": "0.1.0",
+  "description": "Fixed-memory messaging and liveness primitives for distributed microcontrollers.",
+  "keywords": [
+    "embedded",
+    "distributed-systems",
+    "i2c",
+    "uart",
+    "raspberry-pi-pico",
+    "arduino"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/s2312016/picomesh.git"
+  },
+  "authors": [
+    {
+      "name": "Yuto Nakayama",
+      "maintainer": true
+    }
+  ],
+  "license": "Apache-2.0",
+  "frameworks": ["arduino"],
+  "platforms": "*",
+  "headers": "PicoMesh.h",
+  "build": {
+    "srcFilter": [
+      "+<*>",
+      "+<arduino/*>"
+    ]
+  }
+}
