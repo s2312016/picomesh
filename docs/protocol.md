@@ -60,6 +60,12 @@ Sequence comparison uses modulo-256 distance. Distances `1..127` are newer, `0` 
 
 UART, USB CDC, and other byte-stream transports should use `StreamDecoder`. It discards noise before the magic byte, determines the frame length after reading the header, enforces the 32-byte payload limit, and validates the checksum without heap allocation.
 
+## Fixed-size packet reads
+
+Some I2C controller APIs request a fixed maximum byte count even when the encoded frame is shorter. A peripheral may therefore pad the remainder of the read. `frame_length_from_prefix()` validates the magic byte, protocol version, and payload-length field, then returns the complete encoded length when that frame is present in the received buffer. Platform adapters use this helper to remove transport padding before strict checksum decoding.
+
+Padding bytes are not part of the frame and are not included in the checksum. A prefix that describes a frame longer than the received buffer is incomplete and must not be decoded.
+
 ## Compatibility
 
 Receivers must reject unknown protocol versions unless an adapter explicitly supports them. Application payloads should define their own schema version when long-term compatibility is required.
