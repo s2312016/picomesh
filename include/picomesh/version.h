@@ -20,4 +20,4 @@ inline constexpr unsigned version_patch = PICOMESH_VERSION_PATCH;
 /** Compile-time semantic version string. */
 inline constexpr const char* version_string = PICOMESH_VERSION_STRING;
 
-}  // namespace picomesh
+} // namespace picomesh

@@ -2,13 +2,10 @@
 
 namespace picomesh {
 
-NodeRegistry::NodeRegistry(const std::uint32_t timeout_ms) noexcept
-    : timeout_ms_(timeout_ms) {}
+NodeRegistry::NodeRegistry(const std::uint32_t timeout_ms) noexcept : timeout_ms_(timeout_ms) {}
 
-bool NodeRegistry::observe(
-    const std::uint8_t node_id,
-    const std::uint8_t sequence,
-    const std::uint32_t now_ms) noexcept {
+bool NodeRegistry::observe(const std::uint8_t node_id, const std::uint8_t sequence,
+                           const std::uint32_t now_ms) noexcept {
     if (node_id >= kMaxNodes) {
         return false;
     }
@@ -51,4 +48,4 @@ std::size_t NodeRegistry::online_count() const noexcept {
     return count;
 }
 
-}  // namespace picomesh
+} // namespace picomesh

@@ -26,4 +26,4 @@ bool verify_checksum8(const std::uint8_t* data, const std::size_t length) noexce
     return sum == 0;
 }
 
-}  // namespace picomesh
+} // namespace picomesh

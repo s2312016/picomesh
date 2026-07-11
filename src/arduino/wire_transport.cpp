@@ -6,14 +6,10 @@ namespace picomesh::arduino {
 
 WirePeripheralEndpoint* WirePeripheralEndpoint::active_ = nullptr;
 
-WireControllerTransport::WireControllerTransport(
-    TwoWire& wire,
-    const std::uint8_t address) noexcept
+WireControllerTransport::WireControllerTransport(TwoWire& wire, const std::uint8_t address) noexcept
     : wire_(&wire), address_(address) {}
 
-bool WireControllerTransport::send(
-    const std::uint8_t* data,
-    const std::size_t length) {
+bool WireControllerTransport::send(const std::uint8_t* data, const std::size_t length) {
     if (data == nullptr || length == 0 || length > 255) {
         return false;
     }
@@ -23,9 +19,8 @@ bool WireControllerTransport::send(
     return written == length && wire_->endTransmission() == 0;
 }
 
-std::size_t WireControllerTransport::receive(
-    std::uint8_t* destination,
-    const std::size_t capacity) {
+std::size_t WireControllerTransport::receive(std::uint8_t* destination,
+                                             const std::size_t capacity) {
     if (destination == nullptr || capacity == 0) {
         return 0;
     }
@@ -46,9 +41,7 @@ std::size_t WireControllerTransport::receive(
     return frame_length != 0 ? frame_length : count;
 }
 
-bool WirePeripheralEndpoint::begin(
-    const std::uint8_t address,
-    TwoWire& wire) noexcept {
+bool WirePeripheralEndpoint::begin(const std::uint8_t address, TwoWire& wire) noexcept {
     if (active_ != nullptr && active_ != this) {
         return false;
     }
@@ -142,6 +135,6 @@ void WirePeripheralEndpoint::request_from_isr() noexcept {
     }
 }
 
-}  // namespace picomesh::arduino
+} // namespace picomesh::arduino
 
-#endif  // ARDUINO
+#endif // ARDUINO

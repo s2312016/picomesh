@@ -13,7 +13,7 @@ namespace picomesh {
  * layers. Implementations must not write beyond the supplied receive capacity.
  */
 class Transport {
-public:
+  public:
     virtual ~Transport() = default;
 
     /**
@@ -33,4 +33,4 @@ public:
     virtual std::size_t receive(std::uint8_t* destination, std::size_t capacity) = 0;
 };
 
-}  // namespace picomesh
+} // namespace picomesh

@@ -1,8 +1,8 @@
-#include <cstddef>
-#include <cstdint>
-
 #include "picomesh/frame.h"
 #include "picomesh/stream_decoder.h"
+
+#include <cstddef>
+#include <cstdint>
 
 namespace {
 
@@ -15,9 +15,8 @@ namespace {
 }
 
 bool frames_equal(const picomesh::Frame& left, const picomesh::Frame& right) {
-    if (left.type != right.type || left.flags != right.flags ||
-        left.node_id != right.node_id || left.sequence != right.sequence ||
-        left.payload_length != right.payload_length) {
+    if (left.type != right.type || left.flags != right.flags || left.node_id != right.node_id ||
+        left.sequence != right.sequence || left.payload_length != right.payload_length) {
         return false;
     }
 
@@ -29,7 +28,7 @@ bool frames_equal(const picomesh::Frame& left, const picomesh::Frame& right) {
     return true;
 }
 
-}  // namespace
+} // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data, const std::size_t size) {
     const auto exact = picomesh::decode_frame(data, size);

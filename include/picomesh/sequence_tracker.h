@@ -1,10 +1,10 @@
 #pragma once
 
+#include "picomesh/node_registry.h"
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
-
-#include "picomesh/node_registry.h"
 
 namespace picomesh {
 
@@ -25,7 +25,7 @@ enum class SequenceState {
  * to 0 while rejecting delayed packets.
  */
 class SequenceTracker {
-public:
+  public:
     /**
      * @brief Classify and, when newer, remember a sequence.
      * @param node_id Logical node identifier.
@@ -43,9 +43,9 @@ public:
     /** @brief Forget sequence history for every node. */
     void reset_all() noexcept;
 
-private:
+  private:
     std::array<std::uint8_t, kMaxNodes> last_sequence_{};
     std::array<bool, kMaxNodes> seen_{};
 };
 
-}  // namespace picomesh
+} // namespace picomesh

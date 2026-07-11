@@ -12,10 +12,10 @@ constexpr std::size_t kMaxNodes = 32;
 
 /** @brief Last observed liveness state for one logical node. */
 struct NodeStatus {
-    std::uint8_t node_id{0};        ///< Logical node identifier.
-    std::uint8_t last_sequence{0};  ///< Most recently observed sequence.
-    std::uint32_t last_seen_ms{0};  ///< Modulo-2^32 observation time.
-    bool online{false};             ///< Whether the node is within the timeout.
+    std::uint8_t node_id{0};       ///< Logical node identifier.
+    std::uint8_t last_sequence{0}; ///< Most recently observed sequence.
+    std::uint32_t last_seen_ms{0}; ///< Modulo-2^32 observation time.
+    bool online{false};            ///< Whether the node is within the timeout.
 };
 
 /**
@@ -25,7 +25,7 @@ struct NodeStatus {
  * Timeout calculations use unsigned wrap-safe elapsed-time arithmetic.
  */
 class NodeRegistry {
-public:
+  public:
     /**
      * @brief Construct a registry.
      * @param timeout_ms Maximum elapsed time before a node becomes offline.
@@ -57,12 +57,14 @@ public:
     std::size_t online_count() const noexcept;
 
     /** @return Configured liveness timeout in milliseconds. */
-    std::uint32_t timeout_ms() const noexcept { return timeout_ms_; }
+    std::uint32_t timeout_ms() const noexcept {
+        return timeout_ms_;
+    }
 
-private:
+  private:
     std::array<NodeStatus, kMaxNodes> nodes_{};
     std::array<bool, kMaxNodes> present_{};
     std::uint32_t timeout_ms_;
 };
 
-}  // namespace picomesh
+} // namespace picomesh

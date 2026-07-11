@@ -3,19 +3,14 @@
 namespace picomesh {
 namespace {
 
-bool deadline_reached(
-    const std::uint32_t now_ms,
-    const std::uint32_t deadline_ms) noexcept {
+bool deadline_reached(const std::uint32_t now_ms, const std::uint32_t deadline_ms) noexcept {
     return static_cast<std::int32_t>(now_ms - deadline_ms) >= 0;
 }
 
-}  // namespace
+} // namespace
 
-Frame make_ack_frame(
-    const std::uint8_t node_id,
-    const std::uint8_t response_sequence,
-    const std::uint8_t acknowledged_sequence,
-    const AckStatus status) noexcept {
+Frame make_ack_frame(const std::uint8_t node_id, const std::uint8_t response_sequence,
+                     const std::uint8_t acknowledged_sequence, const AckStatus status) noexcept {
     Frame frame;
     frame.type = MessageType::acknowledgement;
     frame.node_id = node_id;
@@ -26,10 +21,8 @@ Frame make_ack_frame(
     return frame;
 }
 
-bool parse_ack_frame(
-    const Frame& frame,
-    std::uint8_t& acknowledged_sequence,
-    AckStatus& status) noexcept {
+bool parse_ack_frame(const Frame& frame, std::uint8_t& acknowledged_sequence,
+                     AckStatus& status) noexcept {
     if (frame.type != MessageType::acknowledgement || frame.payload_length != 2) {
         return false;
     }
@@ -96,10 +89,8 @@ TxDecision ReliableQueue::next_due(const std::uint32_t now_ms) noexcept {
     return {};
 }
 
-AckResolution ReliableQueue::acknowledge(
-    const std::uint8_t node_id,
-    const std::uint8_t sequence,
-    const AckStatus status) noexcept {
+AckResolution ReliableQueue::acknowledge(const std::uint8_t node_id, const std::uint8_t sequence,
+                                         const AckStatus status) noexcept {
     for (auto& slot : slots_) {
         if (slot.active && slot.frame.node_id == node_id && slot.frame.sequence == sequence) {
             slot.active = false;
@@ -136,4 +127,4 @@ void ReliableQueue::clear() noexcept {
     }
 }
 
-}  // namespace picomesh
+} // namespace picomesh

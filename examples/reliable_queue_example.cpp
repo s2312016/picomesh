@@ -1,7 +1,7 @@
+#include "picomesh/reliability.h"
+
 #include <cstdint>
 #include <iostream>
-
-#include "picomesh/reliability.h"
 
 int main() {
     picomesh::ReliableQueue queue({100, 3});
@@ -35,17 +35,14 @@ int main() {
         return 4;
     }
 
-    const auto resolution = queue.acknowledge(
-        command.node_id,
-        command.sequence,
-        picomesh::AckStatus::accepted);
+    const auto resolution =
+        queue.acknowledge(command.node_id, command.sequence, picomesh::AckStatus::accepted);
     if (resolution != picomesh::AckResolution::accepted || queue.pending_count() != 0) {
         std::cerr << "Acknowledgement did not clear the queue\n";
         return 5;
     }
 
     std::cout << "Command sequence=" << static_cast<unsigned>(command.sequence)
-              << " acknowledged after " << static_cast<unsigned>(retry.attempts)
-              << " attempts\n";
+              << " acknowledged after " << static_cast<unsigned>(retry.attempts) << " attempts\n";
     return 0;
 }

@@ -1,11 +1,11 @@
-#include <cstdint>
-#include <cstdio>
-
 #include "hardware/i2c.h"
 #include "pico/stdlib.h"
 #include "picomesh/frame.h"
 #include "picomesh/reliability.h"
 #include "picomesh_pico_transport.h"
+
+#include <cstdint>
+#include <cstdio>
 
 namespace {
 
@@ -32,7 +32,7 @@ void publish_heartbeat() {
     endpoint.publish(heartbeat);
 }
 
-}  // namespace
+} // namespace
 
 int main() {
     stdio_init_all();
@@ -60,18 +60,12 @@ int main() {
 
         picomesh::Frame incoming;
         if (endpoint.poll(incoming)) {
-            std::printf(
-                "RX node=%u sequence=%u type=0x%02x\n",
-                incoming.node_id,
-                incoming.sequence,
-                static_cast<unsigned>(incoming.type));
+            std::printf("RX node=%u sequence=%u type=0x%02x\n", incoming.node_id, incoming.sequence,
+                        static_cast<unsigned>(incoming.type));
 
             if ((incoming.flags & picomesh::kFlagAckRequired) != 0u) {
                 endpoint.publish(picomesh::make_ack_frame(
-                    kNodeId,
-                    sequence_number++,
-                    incoming.sequence,
-                    picomesh::AckStatus::accepted));
+                    kNodeId, sequence_number++, incoming.sequence, picomesh::AckStatus::accepted));
             }
         }
 

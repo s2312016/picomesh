@@ -1,8 +1,8 @@
-#include <cstdint>
-#include <iostream>
-
 #include "picomesh/frame.h"
 #include "picomesh/reliability.h"
+
+#include <cstdint>
+#include <iostream>
 
 int main() {
     picomesh::ReliableQueue queue({200, 3});
@@ -26,19 +26,18 @@ int main() {
         const auto decision = queue.next_due(now_ms);
         if (decision.action == picomesh::TxAction::send) {
             ++simulated_transmissions;
-            std::cout << "TX attempt " << static_cast<unsigned>(decision.attempts)
-                      << " at " << now_ms << " ms\n";
+            std::cout << "TX attempt " << static_cast<unsigned>(decision.attempts) << " at "
+                      << now_ms << " ms\n";
 
             // Deterministically drop the first packet and accept the second.
             if (simulated_transmissions == 1) {
                 std::cout << "  packet dropped by simulated link\n";
             } else {
                 const auto resolution = queue.acknowledge(
-                    decision.frame.node_id,
-                    decision.frame.sequence,
-                    picomesh::AckStatus::accepted);
+                    decision.frame.node_id, decision.frame.sequence, picomesh::AckStatus::accepted);
                 std::cout << "  acknowledgement received: "
-                          << (resolution == picomesh::AckResolution::accepted ? "accepted" : "error")
+                          << (resolution == picomesh::AckResolution::accepted ? "accepted"
+                                                                              : "error")
                           << '\n';
             }
         } else if (decision.action == picomesh::TxAction::exhausted) {

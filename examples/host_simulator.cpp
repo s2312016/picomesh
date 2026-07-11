@@ -1,9 +1,9 @@
+#include "picomesh/frame.h"
+#include "picomesh/node_registry.h"
+
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
-
-#include "picomesh/frame.h"
-#include "picomesh/node_registry.h"
 
 int main() {
     picomesh::Frame heartbeat;

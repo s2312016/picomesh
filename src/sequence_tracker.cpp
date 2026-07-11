@@ -2,9 +2,8 @@
 
 namespace picomesh {
 
-SequenceState SequenceTracker::observe(
-    const std::uint8_t node_id,
-    const std::uint8_t sequence) noexcept {
+SequenceState SequenceTracker::observe(const std::uint8_t node_id,
+                                       const std::uint8_t sequence) noexcept {
     if (node_id >= kMaxNodes) {
         return SequenceState::invalid_node;
     }
@@ -42,4 +41,4 @@ void SequenceTracker::reset_all() noexcept {
     last_sequence_.fill(0);
 }
 
-}  // namespace picomesh
+} // namespace picomesh
