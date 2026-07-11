@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If PicoMesh supports your research or project, please cite the software using this metadata."
+title: "PicoMesh"
+type: software
+authors:
+  - family-names: "Nakayama"
+    given-names: "Yuto"
+repository-code: "https://github.com/s2312016/picomesh"
+url: "https://github.com/s2312016/picomesh"
+license: "Apache-2.0"
+version: "0.1.0"
+abstract: "A fixed-memory, transport-independent framework for distributed systems on resource-constrained microcontrollers."
+keywords:
+  - embedded systems
+  - distributed systems
+  - Raspberry Pi Pico
+  - Arduino
+  - fault tolerance
