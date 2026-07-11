@@ -23,6 +23,6 @@ Use the bug-report template. A report is most actionable when it identifies the 
 
 Do not open a public issue for a suspected vulnerability. Follow [SECURITY.md](SECURITY.md).
 
-## Research-specific AETERNA questions
+## Research-specific questions
 
-The public PicoMesh issue tracker is only for reusable PicoMesh functionality. Questions about private AETERNA models, datasets, voting experiments, PCB production files, or unpublished algorithms should not be posted here.
+The public PicoMesh issue tracker is only for reusable PicoMesh functionality. Questions about private models, datasets, voting experiments, PCB production files, or unpublished algorithms should not be posted here.
