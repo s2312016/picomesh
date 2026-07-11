@@ -36,5 +36,28 @@ jobs:
       - name: Build
         run: cmake --build build-pico --parallel
 
-      - name: List firmware outputs
-        run: find build-pico -maxdepth 2 -type f \( -name '*.uf2' -o -name '*.elf' \) -print
+      - name: Report firmware size
+        shell: bash
+        run: |
+          elf="$(find build-pico -type f -name 'picomesh_pico_i2c_node.elf' -print -quit)"
+          test -n "$elf"
+          echo "Board: ${{ matrix.board }}" | tee "firmware-size-${{ matrix.board }}.txt"
+          echo "ELF: $elf" | tee -a "firmware-size-${{ matrix.board }}.txt"
+          arm-none-eabi-size "$elf" | tee -a "firmware-size-${{ matrix.board }}.txt"
+
+      - name: Collect firmware outputs
+        shell: bash
+        run: |
+          mkdir -p "firmware-${{ matrix.board }}"
+          find build-pico -type f \( -name '*.uf2' -o -name '*.elf' \) \
+            -exec cp {} "firmware-${{ matrix.board }}/" \;
+          cp "firmware-size-${{ matrix.board }}.txt" "firmware-${{ matrix.board }}/"
+          find "firmware-${{ matrix.board }}" -type f -maxdepth 1 -print
+
+      - name: Upload firmware and size report
+        uses: actions/upload-artifact@v4
+        with:
+          name: picomesh-${{ matrix.board }}-firmware
+          path: firmware-${{ matrix.board }}
+          if-no-files-found: error
+          retention-days: 14
