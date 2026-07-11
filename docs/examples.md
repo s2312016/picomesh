@@ -10,6 +10,7 @@ Examples are grouped by the environment in which they run. Host examples are com
 | `picomesh_reliable_queue_example` | `examples/reliable_queue_example.cpp` | Scheduling a send, waiting for a retry deadline, and resolving an ACK |
 | `picomesh_host_simulator` | `examples/host_simulator.cpp` | Frame output and node liveness timeout behavior |
 | `picomesh_lossy_link_simulator` | `examples/lossy_link_simulator.cpp` | Deterministic retry behavior across a simulated lossy link |
+| `picomesh_malformed_link_simulator` | `examples/malformed_link_simulator.cpp` | Noise, checksum corruption, unsupported versions, oversized payload declarations, and recovery |
 
 Build and run them with:
 
@@ -56,7 +57,7 @@ Build instructions are in [`getting_started.md`](getting_started.md).
 
 - Start with `frame_codec_example.cpp` to learn the data model.
 - Use `reliable_queue_example.cpp` before integrating commands and ACKs.
-- Use the host simulators to explore timeouts and packet loss.
+- Use the host simulators to explore timeouts, packet loss, malformed inputs, and decoder recovery.
 - Use the Arduino heartbeat pair for the first physical link.
 - Move to the reliable command examples only after heartbeat polling is stable.
 
