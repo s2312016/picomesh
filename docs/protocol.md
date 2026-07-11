@@ -64,6 +64,6 @@ UART, USB CDC, and other byte-stream transports should use `StreamDecoder`. It d
 
 Receivers must reject unknown protocol versions unless an adapter explicitly supports them. Application payloads should define their own schema version when long-term compatibility is required.
 
-## Origin and separation
+## Project boundary
 
-The compact packet, sequence, and checksum pattern was generalized from AETERNA's internal I2C state exchange. AETERNA's 26-byte galaxy-inference response and fault-injection commands are intentionally not part of the public protocol.
+The public protocol contains only general framing, identity, sequencing, liveness, and reliability fields. Application-specific inference results, experimental fault commands, datasets, and fixed hardware topology are not part of the protocol.
