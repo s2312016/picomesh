@@ -12,6 +12,7 @@ add_library(picomesh
     src/checksum.cpp
     src/frame.cpp
     src/node_registry.cpp
+    src/sequence_tracker.cpp
 )
 
 add_library(PicoMesh::picomesh ALIAS picomesh)
