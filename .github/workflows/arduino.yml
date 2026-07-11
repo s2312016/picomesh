@@ -21,4 +21,5 @@ jobs:
             - examples/ArduinoHeartbeatNode
             - examples/ArduinoHeartbeatController
             - examples/ArduinoMultiNodeController
+            - examples/ArduinoReliableCommandController
           enable-warnings-report: true
