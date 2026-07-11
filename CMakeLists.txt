@@ -59,9 +59,14 @@ endif()
 
 if(PICOMESH_BUILD_TESTS)
     enable_testing()
+
     add_executable(picomesh_tests tests/test_main.cpp)
     target_link_libraries(picomesh_tests PRIVATE PicoMesh::picomesh)
     add_test(NAME picomesh_tests COMMAND picomesh_tests)
+
+    add_executable(picomesh_protocol_vectors tests/test_protocol_vectors.cpp)
+    target_link_libraries(picomesh_protocol_vectors PRIVATE PicoMesh::picomesh)
+    add_test(NAME picomesh_protocol_vectors COMMAND picomesh_protocol_vectors)
 
     if(PICOMESH_BUILD_EXAMPLES)
         add_test(NAME picomesh_lossy_link_simulator COMMAND picomesh_lossy_link_simulator)
