@@ -1,0 +1,77 @@
+name: Hardware validation report
+description: Submit reproducible physical interoperability evidence
+title: "[Hardware]: "
+labels: [hardware-validation]
+body:
+  - type: input
+    id: commit
+    attributes:
+      label: PicoMesh commit
+      description: Full commit SHA used to build every tested firmware image.
+    validations:
+      required: true
+
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Boards and components
+      description: List exact controller, peripherals, level shifters, pull-up values, power sources, and relevant revisions.
+    validations:
+      required: true
+
+  - type: textarea
+    id: toolchain
+    attributes:
+      label: Toolchain versions
+      description: Include Arduino IDE/CLI and core, Pico SDK, compiler, CMake, and any other build tools.
+    validations:
+      required: true
+
+  - type: textarea
+    id: wiring
+    attributes:
+      label: Wiring and electrical conditions
+      description: Include pins, measured idle voltages, bus speed, common ground, cable length, pull-ups, and level shifting.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: scenarios
+    attributes:
+      label: Scenarios completed
+      options:
+        - label: Heartbeat frames were read with increasing or valid duplicate sequence behavior.
+        - label: Node timeout and recovery were observed.
+        - label: Corrupted checksum and unsupported protocol inputs were rejected.
+        - label: Command ACK behavior was observed.
+        - label: Lost ACK retry and retry exhaustion were observed.
+        - label: Repeated reads/writes were exercised for a documented duration or count.
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Provide concise timestamped serial excerpts, test counts, failures, and links to repository-safe artifacts.
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: limitations
+    attributes:
+      label: Limitations and failures
+      description: Record intermittent behavior, buffer limits, voltage or timing concerns, and any untested rows.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Evidence checks
+      options:
+        - label: I used physical hardware rather than compile-only or simulated evidence.
+          required: true
+        - label: I removed credentials, private data, and unrelated device identifiers.
+          required: true
+        - label: The report can be reproduced from public source and documented components.
+          required: true

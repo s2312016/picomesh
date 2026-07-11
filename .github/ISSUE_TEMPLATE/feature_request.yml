@@ -7,16 +7,60 @@ body:
     id: use_case
     attributes:
       label: Use case
-      description: Describe the embedded or distributed-system problem.
+      description: Describe the reusable embedded or distributed-system problem without including private project details.
     validations:
       required: true
+
+  - type: textarea
+    id: current_limit
+    attributes:
+      label: Current limitation
+      description: Explain why the existing framing, liveness, reliability, stream, or transport APIs are insufficient.
+    validations:
+      required: true
+
   - type: textarea
     id: proposal
     attributes:
       label: Proposed behavior
+      description: Describe observable behavior and a minimal API shape rather than a private application implementation.
     validations:
       required: true
-  - type: input
-    id: platform
+
+  - type: dropdown
+    id: scope
     attributes:
-      label: Target platform or transport
+      label: Primary scope
+      options:
+        - Portable protocol core
+        - Reliability and liveness
+        - Arduino adapter
+        - Pico SDK adapter
+        - Additional transport
+        - Build, packaging, or documentation
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Embedded constraints
+      description: State memory bounds, timing needs, buffer sizes, toolchain limits, and whether dynamic allocation is acceptable.
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility impact
+      description: Identify possible wire-format, public API, resource-limit, or behavior changes.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: The proposal is reusable beyond one private application.
+          required: true
+        - label: I searched existing issues and the roadmap.
+          required: true
+        - label: I did not include private datasets, algorithms, credentials, or board-production files.
+          required: true
