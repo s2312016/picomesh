@@ -55,18 +55,23 @@ void test_reliable_queue() {
     CHECK(decision.action == picomesh::TxAction::send);
     CHECK(decision.attempts == 1);
     CHECK((decision.frame.flags & picomesh::kFlagAckRequired) != 0);
+
     CHECK(queue.next_due(1099).action == picomesh::TxAction::none);
     decision = queue.next_due(1100);
     CHECK(decision.action == picomesh::TxAction::send);
     CHECK(decision.attempts == 2);
+
     decision = queue.next_due(1200);
     CHECK(decision.action == picomesh::TxAction::exhausted);
     CHECK(queue.pending_count() == 0);
 
     CHECK(queue.enqueue(command, 2000) == picomesh::QueueResult::queued);
-    CHECK(queue.acknowledge(7, 42, picomesh::AckStatus::accepted) == picomesh::AckResolution::accepted);
+    CHECK(queue.acknowledge(7, 42, picomesh::AckStatus::accepted) ==
+          picomesh::AckResolution::accepted);
     CHECK(queue.pending_count() == 0);
-    CHECK(queue.acknowledge(7, 42, picomesh::AckStatus::accepted) == picomesh::AckResolution::not_found);
+
+    CHECK(queue.acknowledge(7, 42, picomesh::AckStatus::accepted) ==
+          picomesh::AckResolution::not_found);
     CHECK(queue.enqueue(command, 3000) == picomesh::QueueResult::queued);
     CHECK(queue.acknowledge(7, 42, picomesh::AckStatus::busy) == picomesh::AckResolution::rejected);
 }
@@ -85,6 +90,7 @@ void test_reliable_queue_capacity_and_control() {
     extra.node_id = static_cast<std::uint8_t>(picomesh::kMaxPendingTransmissions);
     extra.sequence = 99;
     CHECK(queue.enqueue(extra, 0) == picomesh::QueueResult::full);
+
     CHECK(queue.cancel(3, 3));
     CHECK(!queue.cancel(3, 3));
     CHECK(queue.pending_count() == picomesh::kMaxPendingTransmissions - 1);
@@ -103,6 +109,7 @@ void test_retry_timer_wraparound() {
     picomesh::ReliableQueue queue({100, 2});
     const auto command = sample_command();
     constexpr std::uint32_t near_wrap = std::numeric_limits<std::uint32_t>::max() - 50u;
+
     CHECK(queue.enqueue(command, near_wrap) == picomesh::QueueResult::queued);
     CHECK(queue.next_due(near_wrap).action == picomesh::TxAction::send);
     CHECK(queue.next_due(48).action == picomesh::TxAction::none);
@@ -112,11 +119,14 @@ void test_retry_timer_wraparound() {
 void test_stream_decoder() {
     const auto encoded = picomesh::encode_frame(sample_command());
     picomesh::StreamDecoder decoder;
+
     CHECK(decoder.feed(0x00).status == picomesh::StreamStatus::discarded);
+
     picomesh::StreamResult result;
     for (std::size_t i = 0; i < encoded.length; ++i) {
         result = decoder.feed(encoded.bytes[i]);
     }
+
     CHECK(result.status == picomesh::StreamStatus::frame_ready);
     CHECK(result.frame.node_id == 7);
     CHECK(result.frame.sequence == 42);
@@ -132,8 +142,12 @@ void test_stream_decoder_errors_and_recovery() {
     CHECK(decoder.buffered_size() == 0);
 
     const std::array<std::uint8_t, picomesh::kFrameHeaderSize> oversized_header{
-        picomesh::kFrameMagic, picomesh::kProtocolVersion,
-        static_cast<std::uint8_t>(picomesh::MessageType::state), 0, 1, 2,
+        picomesh::kFrameMagic,
+        picomesh::kProtocolVersion,
+        static_cast<std::uint8_t>(picomesh::MessageType::state),
+        0,
+        1,
+        2,
         static_cast<std::uint8_t>(picomesh::kMaxPayloadSize + 1),
     };
     for (const auto byte : oversized_header) {
@@ -159,6 +173,7 @@ void test_stream_decoder_errors_and_recovery() {
     }
     CHECK(result.status == picomesh::StreamStatus::frame_ready);
     CHECK(result.frame.sequence == sample_command().sequence);
+
     CHECK(decoder.feed(picomesh::kFrameMagic).status == picomesh::StreamStatus::need_more);
     CHECK(decoder.buffered_size() == 1);
     decoder.reset();
