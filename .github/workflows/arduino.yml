@@ -20,4 +20,5 @@ jobs:
           sketch-paths: |
             - examples/ArduinoHeartbeatNode
             - examples/ArduinoHeartbeatController
+            - examples/ArduinoMultiNodeController
           enable-warnings-report: true
