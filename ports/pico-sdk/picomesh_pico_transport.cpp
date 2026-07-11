@@ -31,7 +31,13 @@ std::size_t I2cControllerTransport::receive(
     }
 
     const int received = i2c_read_blocking(instance_, address_, destination, capacity, false);
-    return received > 0 ? static_cast<std::size_t>(received) : 0;
+    if (received <= 0) {
+        return 0;
+    }
+
+    const std::size_t count = static_cast<std::size_t>(received);
+    const std::size_t frame_length = frame_length_from_prefix(destination, count);
+    return frame_length != 0 ? frame_length : count;
 }
 
 bool UartTransport::send(
