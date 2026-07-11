@@ -2,7 +2,7 @@
 
 ## Primary maintainer
 
-- **Yuto Nakayama** — [@s2312016](https://github.com/s2312016)
+- **Yuto Nakayama** — [s2312016](https://github.com/s2312016)
 
 The primary maintainer owns release coordination, issue triage, pull-request review, protocol compatibility, security response, and supported-platform CI.
 
