@@ -6,10 +6,10 @@ PicoMesh has one portable C++17 core and platform adapters for host builds, Ardu
 
 | Goal | Start here |
 |---|---|
-| Evaluate the protocol on a PC | [Host build](#host-build) |
-| Use Arduino Wire | [Arduino](#arduino) |
-| Build RP2040 or RP2350 firmware | [Raspberry Pi Pico SDK](#raspberry-pi-pico-sdk) |
-| Connect mixed-voltage boards | [Hardware safety](#hardware-safety) |
+| Evaluate the protocol on a PC | Host build |
+| Use Arduino Wire | Arduino |
+| Build RP2040 or RP2350 firmware | Raspberry Pi Pico SDK |
+| Connect mixed-voltage boards | Hardware safety |
 
 ## Host build
 
@@ -83,7 +83,7 @@ cmake -S examples/PicoSdkI2cNode -B build-pico2 -DPICO_BOARD=pico2
 cmake --build build-pico2 --parallel
 ```
 
-Copy the generated `.uf2` file to the board while it is in BOOTSEL mode. See [`ports/pico-sdk/README.md`](../ports/pico-sdk/README.md) for integration into another firmware project.
+Copy the generated `.uf2` file to the board while it is in BOOTSEL mode. Integration details are in `ports/pico-sdk/README.md`.
 
 ## Hardware safety
 
