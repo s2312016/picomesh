@@ -39,6 +39,7 @@ ctest --test-dir build --output-on-failure
 - `ArduinoHeartbeatNode`
 - `ArduinoHeartbeatController`
 - `ArduinoMultiNodeController`
+- `ArduinoReliableCommandController`
 
 基準サンプルはI2Cアドレス`0x42`、100 kHzを使用します。Pico側は3.3 V系なので、接続前に[`docs/hardware_wiring.md`](docs/hardware_wiring.md)を確認してください。
 
