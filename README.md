@@ -2,9 +2,13 @@
 
 [![CI](https://github.com/s2312016/picomesh/actions/workflows/ci.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/ci.yml)
 [![Arduino](https://github.com/s2312016/picomesh/actions/workflows/arduino.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/arduino.yml)
+[![PlatformIO](https://github.com/s2312016/picomesh/actions/workflows/platformio.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/platformio.yml)
 [![Pico SDK](https://github.com/s2312016/picomesh/actions/workflows/pico-sdk.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/pico-sdk.yml)
+[![Coverage](https://github.com/s2312016/picomesh/actions/workflows/coverage.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/coverage.yml)
+[![Fuzz smoke](https://github.com/s2312016/picomesh/actions/workflows/fuzz-smoke.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/fuzz-smoke.yml)
 [![Static analysis](https://github.com/s2312016/picomesh/actions/workflows/static-analysis.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/static-analysis.yml)
 [![Documentation](https://github.com/s2312016/picomesh/actions/workflows/docs.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/docs.yml)
+[![Release readiness](https://github.com/s2312016/picomesh/actions/workflows/release-readiness.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/release-readiness.yml)
 [![CodeQL](https://github.com/s2312016/picomesh/actions/workflows/codeql.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/codeql.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
@@ -30,8 +34,10 @@ Embedded projects repeatedly reimplement packet framing, checksums, heartbeat tr
 - Transport abstraction for I2C, UART, CAN, USB CDC, radio, or host simulation
 - Arduino Wire controller and peripheral adapters
 - Raspberry Pi Pico/Pico 2 SDK I2C controller, I2C peripheral, and UART adapters
-- Host simulator, lossy-link simulator, unit tests, sanitizers, static analysis, and CodeQL
+- Host simulators for liveness, packet loss, malformed input, and decoder recovery
+- Cross-platform tests, sanitizers, coverage reports, fuzz smoke tests, static analysis, and CodeQL
 - CMake install package plus Arduino and PlatformIO metadata
+- Release-candidate archive, Arduino ZIP compile, and firmware-size checks
 
 Resource limits are listed in [docs/resource_limits.md](docs/resource_limits.md). New users should start with the [getting started guide](docs/getting_started.md) and [example catalog](docs/examples.md).
 
@@ -87,7 +93,7 @@ target_link_libraries(my_firmware
     PRIVATE PicoMesh::picomesh PicoMesh::pico_transport)
 ```
 
-See [ports/pico-sdk/README.md](ports/pico-sdk/README.md) and the standalone `PicoSdkI2cNode` example.
+See [ports/pico-sdk/README.md](ports/pico-sdk/README.md) and the standalone `PicoSdkI2cNode` example. Windows users can follow [docs/windows_pico_build.md](docs/windows_pico_build.md) or run `scripts/build_pico_windows.ps1` from Developer PowerShell.
 
 ## Architecture
 
@@ -104,11 +110,15 @@ I2C / UART / CAN / USB / simulator
 Key documents:
 
 - [Getting started](docs/getting_started.md)
+- [Windows Pico build](docs/windows_pico_build.md)
 - [Example catalog](docs/examples.md)
 - [Frequently asked questions](docs/faq.md)
 - [Architecture](docs/architecture.md)
 - [Wire protocol](docs/protocol.md)
+- [API reference guide](docs/api_reference.md)
 - [Compatibility policy](docs/compatibility.md)
+- [Testing and coverage](docs/testing.md)
+- [Distribution readiness](docs/distribution.md)
 - [Resource limits](docs/resource_limits.md)
 - [Use cases](docs/use_cases.md)
 - [Hardware validation](docs/hardware_validation.md)
