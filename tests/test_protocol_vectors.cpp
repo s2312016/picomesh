@@ -9,11 +9,6 @@
 
 namespace {
 
-[[noreturn]] void fail(const char* message) {
-    std::cerr << message << '\n';
-    std::exit(1);
-}
-
 template <std::size_t N>
 void expect_bytes(
     const picomesh::EncodedFrame& encoded,
