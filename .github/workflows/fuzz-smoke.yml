@@ -1,0 +1,63 @@
+name: Fuzz smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frame-decoder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build libFuzzer target
+        run: |
+          clang++ \
+            -std=c++17 \
+            -O1 \
+            -g \
+            -fno-omit-frame-pointer \
+            -fsanitize=fuzzer,address,undefined \
+            -Iinclude \
+            tests/fuzz_frame_decoder.cpp \
+            src/checksum.cpp \
+            src/frame.cpp \
+            src/stream_decoder.cpp \
+            -o fuzz-frame-decoder
+
+      - name: Create seed corpus
+        run: |
+          mkdir -p fuzz-corpus fuzz-artifacts
+          python3 - <<'PY'
+          from pathlib import Path
+
+          valid = bytearray([0xB7, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00])
+          valid.append((-sum(valid)) & 0xFF)
+          Path("fuzz-corpus/valid-heartbeat").write_bytes(valid)
+          Path("fuzz-corpus/noise").write_bytes(bytes([0x00, 0xFF, 0xB7]))
+          Path("fuzz-corpus/oversized").write_bytes(
+              bytes([0xB7, 0x01, 0x02, 0x00, 0x01, 0x01, 0x21])
+          )
+          PY
+
+      - name: Run deterministic fuzz budget
+        run: >-
+          ./fuzz-frame-decoder
+          -runs=25000
+          -max_len=128
+          -artifact_prefix=fuzz-artifacts/
+          fuzz-corpus
+
+      - name: Upload crashing inputs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frame-decoder-crashes
+          path: fuzz-artifacts
+          if-no-files-found: ignore
+          retention-days: 14
