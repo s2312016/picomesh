@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <limits>
 
 #include "picomesh/checksum.h"
 #include "picomesh/frame.h"
@@ -70,6 +71,16 @@ void test_registry_timeout() {
     assert(registry.online_count() == 0);
 }
 
+void test_registry_timer_wraparound() {
+    picomesh::NodeRegistry registry(100);
+    constexpr std::uint32_t near_wrap = std::numeric_limits<std::uint32_t>::max() - 50u;
+    assert(registry.observe(3, 9, near_wrap));
+    registry.refresh(25);
+    assert(registry.get(3)->online);
+    registry.refresh(60);
+    assert(!registry.get(3)->online);
+}
+
 void test_acknowledgement_payload() {
     const auto acknowledgement = picomesh::make_ack_frame(
         7,
@@ -111,6 +122,17 @@ void test_reliable_queue() {
     assert(queue.pending_count() == 0);
 }
 
+void test_retry_timer_wraparound() {
+    picomesh::ReliableQueue queue({100, 2});
+    const auto command = sample_command();
+    constexpr std::uint32_t near_wrap = std::numeric_limits<std::uint32_t>::max() - 50u;
+
+    assert(queue.enqueue(command, near_wrap) == picomesh::QueueResult::queued);
+    assert(queue.next_due(near_wrap).action == picomesh::TxAction::send);
+    assert(queue.next_due(48).action == picomesh::TxAction::none);
+    assert(queue.next_due(49).action == picomesh::TxAction::send);
+}
+
 void test_stream_decoder() {
     const auto encoded = picomesh::encode_frame(sample_command());
     picomesh::StreamDecoder decoder;
@@ -136,8 +158,10 @@ int main() {
     test_bad_checksum();
     test_sequence_tracker();
     test_registry_timeout();
+    test_registry_timer_wraparound();
     test_acknowledgement_payload();
     test_reliable_queue();
+    test_retry_timer_wraparound();
     test_stream_decoder();
     std::cout << "PicoMesh tests passed\n";
     return 0;
