@@ -1,31 +1,52 @@
 # PicoMesh
 
 [![CI](https://github.com/s2312016/picomesh/actions/workflows/ci.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/ci.yml)
+[![Arduino](https://github.com/s2312016/picomesh/actions/workflows/arduino.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/arduino.yml)
+[![Pico SDK](https://github.com/s2312016/picomesh/actions/workflows/pico-sdk.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/pico-sdk.yml)
+[![CodeQL](https://github.com/s2312016/picomesh/actions/workflows/codeql.yml/badge.svg)](https://github.com/s2312016/picomesh/actions/workflows/codeql.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
+[日本語](README_ja.md)
 
 PicoMesh is a lightweight, transport-independent framework for building small distributed systems on resource-constrained microcontrollers.
 
-The repository contains independently implemented, reusable infrastructure only. Research-specific inference models, voting algorithms, datasets, board-production files, and unpublished fault-management logic remain outside this project.
+It provides deterministic framing, liveness, sequencing, acknowledgements, and retries without requiring dynamic memory in protocol-critical paths. The same portable C++17 core can be exercised on a desktop simulator and used from Arduino or the Raspberry Pi Pico SDK.
 
-## Current scope
+> **Project status:** pre-1.0. The portable core and supported build targets are automated, while real-hardware interoperability evidence is being completed for the first release.
+
+## Why PicoMesh
+
+Embedded projects repeatedly reimplement packet framing, checksums, heartbeat tracking, duplicate detection, retries, and platform-specific I/O. PicoMesh places those mechanisms behind a small documented protocol and transport boundary so application code can focus on sensing, control, robotics, education, or research.
+
+## Current capabilities
 
 - Fixed-capacity, versioned frames with an 8-bit integrity check
-- No heap allocation in the frame codec, stream decoder, or retry queue
-- Node heartbeat and timeout tracking
+- No heap allocation in the frame codec, stream decoder, node registry, or retry queue
+- Heartbeat and wrap-safe timeout tracking for up to 32 logical nodes
 - Sequence wraparound, duplicate, and stale-packet detection
-- Acknowledgements and configurable retries
-- Transport abstraction for I2C, UART, CAN, USB CDC, or host simulation
-- Arduino Wire controller/peripheral adapters and examples
-- Raspberry Pi Pico SDK I2C-controller and UART adapters
-- Portable C++17 core with host-side tests and simulator
+- Acknowledgements and a bounded configurable retry queue
+- Transport abstraction for I2C, UART, CAN, USB CDC, radio, or host simulation
+- Arduino Wire controller and peripheral adapters
+- Raspberry Pi Pico/Pico 2 SDK I2C controller, I2C peripheral, and UART adapters
+- Host simulator, lossy-link simulator, unit tests, sanitizers, and CodeQL
+- CMake install package plus Arduino and PlatformIO metadata
+
+Resource limits are listed in [docs/resource_limits.md](docs/resource_limits.md).
 
 ## Host quick start
 
 ```sh
-cmake -S . -B build
-cmake --build build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
 ctest --test-dir build --output-on-failure
 ./build/picomesh_host_simulator
+```
+
+PicoMesh can also be installed as a CMake package and consumed with:
+
+```cmake
+find_package(PicoMesh CONFIG REQUIRED)
+target_link_libraries(my_app PRIVATE PicoMesh::picomesh)
 ```
 
 ## Arduino quick start
@@ -34,8 +55,9 @@ Install this repository as an Arduino library, then open one of these examples:
 
 - `ArduinoHeartbeatNode`
 - `ArduinoHeartbeatController`
+- `ArduinoMultiNodeController`
 
-The controller and node use I2C address `0x42` at 100 kHz. Keep all Pico-side I2C signals at 3.3 V. Use a bidirectional level shifter when a controller board has 5 V pull-ups.
+The reference I2C examples use address `0x42` at 100 kHz. Keep Pico-side I2C signals at 3.3 V and read [docs/hardware_wiring.md](docs/hardware_wiring.md) before connecting mixed-voltage boards.
 
 ```cpp
 #include <PicoMesh.h>
@@ -48,7 +70,7 @@ heartbeat.sequence = 7;
 const auto encoded = picomesh::encode_frame(heartbeat);
 ```
 
-## Pico SDK integration
+## Raspberry Pi Pico SDK
 
 After `pico_sdk_init()`, add both PicoMesh targets:
 
@@ -60,38 +82,45 @@ target_link_libraries(my_firmware
     PRIVATE PicoMesh::picomesh PicoMesh::pico_transport)
 ```
 
-See [ports/pico-sdk/README.md](ports/pico-sdk/README.md).
+See [ports/pico-sdk/README.md](ports/pico-sdk/README.md) and the standalone `PicoSdkI2cNode` example.
 
 ## Architecture
 
 ```text
-Application / research logic
-          |
-PicoMesh reliability, liveness, and protocol
-          |
-Transport interface
-          |
+Application logic
+       |
+PicoMesh protocol, reliability, and liveness
+       |
+Transport adapter
+       |
 I2C / UART / CAN / USB / simulator
 ```
 
-See [docs/architecture.md](docs/architecture.md), [docs/protocol.md](docs/protocol.md), and [docs/project_boundary.md](docs/project_boundary.md).
+Key documents:
+
+- [Architecture](docs/architecture.md)
+- [Wire protocol](docs/protocol.md)
+- [Compatibility policy](docs/compatibility.md)
+- [Resource limits](docs/resource_limits.md)
+- [Use cases](docs/use_cases.md)
+- [Hardware validation](docs/hardware_validation.md)
+- [Public project boundary](docs/project_boundary.md)
 
 ## Roadmap
 
-- **v0.1**: portable core, Arduino Wire support, Pico controller/UART adapters, host CI
-- **v0.2**: Pico SDK I2C peripheral endpoint and hardware interoperability tests
-- **v0.3**: packet-loss simulator, retry statistics, and command routing
-- **v0.4**: optional FreeRTOS integration and bounded task mailbox
-- **v0.5**: CAN and USB CDC transports
-- **v1.0**: stable API and documented compatibility guarantees
+- **v0.1**: portable core, Arduino Wire support, Pico SDK support, CI, and reference hardware validation
+- **v0.2**: reliability statistics, richer malformed-link simulation, and command routing
+- **v0.3**: optional FreeRTOS integration and bounded task mailboxes
+- **v0.4**: CAN, USB CDC, and gateway tooling
+- **v1.0**: stable API and documented long-term compatibility guarantees
 
-## Project boundary
+See [ROADMAP.md](ROADMAP.md) for details.
 
-PicoMesh provides only general communication, liveness, framing, retry, and platform-adapter mechanisms. Application-specific models, datasets, evaluation logic, experimental algorithms, and fixed hardware topologies are intentionally excluded.
+## Maintainers and contributions
 
-## Contributing
+Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), then review [GOVERNANCE.md](GOVERNANCE.md) and [MAINTAINERS.md](MAINTAINERS.md). Security reports follow [SECURITY.md](SECURITY.md).
 
-Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+Maintainer automation principles and planned review workflows are documented in [docs/maintainer_automation.md](docs/maintainer_automation.md).
 
 ## License
 
