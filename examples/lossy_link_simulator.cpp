@@ -19,7 +19,7 @@ int main() {
         return 1;
     }
 
-    std::uint64_t now_ms = 0;
+    std::uint32_t now_ms = 0;
     unsigned simulated_transmissions = 0;
 
     while (queue.pending_count() != 0) {
@@ -44,7 +44,7 @@ int main() {
         } else if (decision.action == picomesh::TxAction::exhausted) {
             std::cout << "Retry budget exhausted\n";
         }
-        now_ms += 50;
+        now_ms = static_cast<std::uint32_t>(now_ms + 50u);
     }
 
     std::cout << "Completed after " << simulated_transmissions << " transmissions\n";
